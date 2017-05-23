@@ -1,4 +1,4 @@
-function  separate_rois = generateROIs()
+function  [separate_rois,name] = generateROIs()
 %UNTITLED2 Query the user to select an image file and then generate tiled
 %ROIs for that image.
 
@@ -54,6 +54,10 @@ for y = 1:yTiles
         roiNum = roiNum + 1;
     end
 end
+
+[a,name,ext] = fileparts(fileName);
+
+%save(name,'separate_rois');
 
 end
 
