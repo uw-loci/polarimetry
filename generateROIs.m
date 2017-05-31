@@ -1,4 +1,4 @@
-function  generateROIs(mgName)
+function  generateROIs(imgName)
 %UNTITLED2 Query the user to select an image file and then generate tiled
 %ROIs for that image.
 
@@ -8,15 +8,14 @@ imgInfo = imfinfo(imgName);
 %Define how big the ROIs will be
 roiWidth = 64;
 roiHeight = 64;
+ctBuffer = 4;
 
 %Calculate the number of tiles and the remainder
-xTiles = int32(imgInfo.Width/roiWidth);
-%xOffset = 1 + int8(rem(info.Width,64)/2);
-xOffset = 1;
+xTiles = int32((imgInfo.Width-2*ctBuffer)/roiWidth);
+xOffset = 1 + ctBuffer;
 
-yTiles = int32(imgInfo.Height/roiHeight);
-%yOffset = 1+int8(rem(info.Height,64)/2);
-yOffset = 1;
+yTiles = int32((imgInfo.Height-2*ctBuffer)/roiHeight);
+yOffset = 1 + ctBuffer;
 
 %Track which ROI we are on
 roiNum = 1;

@@ -20,11 +20,11 @@ end
 %Define how big you want the sub files to be
 imgWidth = 512;
 imgHeight = 512;
-ctBuffer = 4; %Number of border pixels for curvelet transform
+ctBuffer = 8; %Twice hte number of border pixels from CT
 
 %Find out how many full size images there are
-xImgNum = fix((imgInfo.Width-2*ctBuffer)/imgWidth);
-yImgNum = fix((imgInfo.Height-2*ctBuffer)/imgWidth);
+xImgNum = fix((imgInfo.Width-ctBuffer)/imgWidth);
+yImgNum = fix((imgInfo.Height-ctBuffer)/imgWidth);
 
 %Get the remainder to perform an offset, so as to obtain the center of the
 %image and delete the sides
@@ -41,8 +41,8 @@ for y = 1:yImgNum
         
         xLow = xOffset+imgWidth*(x-1);
         yLow = yOffset+imgHeight*(y-1);
-        xHigh = xLow + imgWidth-1+2*ctBuffer;
-        yHigh = yLow + imgHeight-1+2*ctBuffer;
+        xHigh = xLow + imgWidth-1+ctBuffer;
+        yHigh = yLow + imgHeight-1+ctBuffer;
        
         subImg = img(yLow:yHigh,xLow:xHigh);
         
