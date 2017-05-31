@@ -3,18 +3,22 @@ function  [separate_rois,name] = generateROIs()
 %ROIs for that image.
 
 % Get the file
-[fileName, pathName] = uigetfile({'*.tif';'*.*'});
-oldFolder = cd(pathName);
+[fileName, filePath] = uigetfile({'*.tif';'*.*'});
+oldFolder = cd(filePath);
 
-info = imfinfo(fileName);
+imgInfo = imfinfo(fileName);
 cd(oldFolder);
 
+%Define how big the ROIs will be
+roiWidth = 64;
+roiHeight = 64;
+
 %Calculate the number of tiles and the remainder
-xTiles = int32(info.Width/64);
+xTiles = int32(imgInfo.Width/roiWidth);
 %xOffset = 1 + int8(rem(info.Width,64)/2);
 xOffset = 1;
 
-yTiles = int32(info.Height/64);
+yTiles = int32(imgInfo.Height/roiHeight);
 %yOffset = 1+int8(rem(info.Height,64)/2);
 yOffset = 1;
 
@@ -24,9 +28,6 @@ roiNum = 1;
 tempROI.date = datestr(now,'mm-dd-yyyy');
 tempROI.time = datestr(now,13);
 tempROI.shape = 1;
-
-roiWidth = 64;
-roiHeight = 64;
 
 
 for y = 1:yTiles
