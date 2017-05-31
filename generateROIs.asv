@@ -1,9 +1,9 @@
-function  generateROIs(mgName)
+function  generateROIs(fileName)
 %UNTITLED2 Query the user to select an image file and then generate tiled
 %ROIs for that image.
 
 % Get the file info
-imgInfo = imfinfo(imgName);
+imgInfo = imfinfo(fileName);
 
 %Define how big the ROIs will be
 roiWidth = 64;
@@ -52,17 +52,11 @@ for y = 1:yTiles
     end
 end
 
-[path,name,~] = fileparts(imgName);
+[path,name,~] = fileparts(fileName);
 
-roiDir = fullfile(path,'ROI_management');
-if (~exist(roiDir,'dir'))
-    mkdir(roiDir)
-    fprintf('Folder created: %s \n',roiDir)
-end
+roiFileName = strcat(path,'ROI_management',
 
-oldFolder = cd(roiDir);
-save(strcat(name,'_ROIs'),'separate_rois');
+save(name,'separate_rois');
 
-cd(oldFolder);
 end
 

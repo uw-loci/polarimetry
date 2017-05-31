@@ -8,7 +8,7 @@ imgInfo = imfinfo(fileName);
 [~, fileName_NE] = fileparts(fileName) %File name without extension
 
 %Define the sub-image directory
-folderName = strcat(fileName_NE,' Sub Images');
+folderName = strcat(fileName_NE,' Tiled Images');
 subDir = fullfile(filePath, folderName);
 if (~exist(subDir,'dir'))
     mkdir(subDir)
@@ -32,36 +32,30 @@ yRem = rem(imgInfo.Height,imgHeight);
 xOffset = 1+fix(xRem/2);
 yOffset = 1+fix(yRem/2);
 
-%% Divide and save the sub images
+%% Divide and save the sub images and their ROIs
 imgNum = 1;
 
 for y = 1:yImgNum
     for x = 1:xImgNum
-        imgName = fullfile(subDir, sprintf('%s_%s.tif',fileName_NE,imgNum));
         
         xLow = xOffset+imgWidth*(x-1);
         yLow = yOffset+imgHeight*(y-1);
         xHigh = xLow + imgWidth-1;
         yHigh = yLow + imgHeight-1;
        
-        subImg = img(xLow:xHigh,yLow:yHigh);
+        subImg = img(yLow:yHigh,xLow:xHigh);
         
         %Threshold for saving to stop analysis of empty regions
-        pixelNum = s(subImg>10);
-        if pixelNum > 3000 %A little more than 1% of pixels
-            
-        
+        if sum(sum(subImg>10)) > 3000 %A little more than 1% of pixels for 512x512
+            imgName = fullfile(subDir, sprintf('%s_%s.tif',fileName_NE,num2str(imgNum)));
+            imwrite(subImg,imgName);
+            generateROIs(imgName);
         end
-        
         imgNum = imgNum+1;
     end
 end
 
 %Crop 
-
-%% Generate ROIS
-% Query whether or not to generate and save the ROIs
-
 
 
 %% Finish
