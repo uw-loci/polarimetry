@@ -14,8 +14,8 @@ function extractSubImages()
 
 %% Open the image and define variables
 % Get the file and its information
-[fileName, filePath] = uigetfile({'*.tif';'*.*'});
-oldFolder = cd(filePath);
+[fileName, filePath] = uigetfile({'*.tif';'*.*'},'Image to subdivide');
+originalDir = cd(filePath);
 img = imread(fileName);
 Param.baseImgInfo = imfinfo(fileName);
 [~, Param.fileName_NE] = fileparts(fileName); %File name without extension
@@ -40,6 +40,7 @@ Param.ctBuffer = 4; %Number of border pixels for curvelet transform.
 %Find out how many full size images there are
 Param.xImgNum = fix((Param.baseImgInfo.Width-2*Param.ctBuffer)/Param.subImageWidth);
 Param.yImgNum = fix((Param.baseImgInfo.Height-2*Param.ctBuffer)/Param.subImageWidth);
+Param.totalImgNum = xImgNum*yImgNum;
 
 %Define two thresholds to simplify analysis by eliminating empty images.
 Param.intensityThresh = 10; %Threshold for pixel intensity
@@ -62,7 +63,7 @@ Param.xRoiRem = rem(Param.subImageWidth-2*Param.ctBuffer,Param.roiWidth);
 Param.xRoiOffset = 1 + Param.ctBuffer + fix(Param.xRoiRem/2);
 
 Param.yRoiNum = fix((Param.subImageHeight-2*Param.ctBuffer)/Param.roiHeightt);
-Param.yRoiNum = rem((Param.subImageHeight-2*Param.ctBuffer,Param.RoiWidth)
+Param.yRoiNum = rem((Param.subImageHeight-2*Param.ctBuffer,Param.RoiWidth);
 Param.yRoiOffset = 1 + Param.ctBuffer + fix(Param.yRoiRem/2);
 
 %% Obtain sub-images and their ROIs
@@ -95,7 +96,7 @@ paramName = fullfile(subDir,'Tiling Parameters');
 save(paramName,'Param');
 
 %Return to the old directory
-cd(oldFolder);
+cd(originalDir);
 
 end
 
