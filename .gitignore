@@ -13,6 +13,7 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+*.asv
 
 # Windows shortcuts
 *.lnk
@@ -50,3 +51,4 @@ currentP_CA.mat
 lastPATH_CAroi.mat
 Zoom 0002.mat
 CurveAlign Outputs/*
+extractSubImages.asv
