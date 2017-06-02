@@ -42,26 +42,43 @@ catch
     return;
 end
 
-%Instantatiate the new parametric image.  Currently 2 dimensions, for
-%orientation (1) and alignment (2)
+%Instantatiate the new parametric image.  Currently 3 dimensions, for
+%orientation (1), alignment (2), and feature number
 NewImg = zeros(Param.yImgNum*Param.yRoiNum,Param.xImgNum*Param.xRoiNum,2);
 
+
+%% Image information extraction
+
 %Check to see if the analyzed images are for the correct base file
-if ~(NewImg{2,2}(1:size(fileName,2)) == fileName)
+if ~(batchData{2,2}(1:size(fileName,2)) == fileName)
     disp('Error: This is not the correct batch file for %s', fileName)
-    disp('This batch file has images from %S', NewImg{2,2})
+    disp('This batch file has images from %S', batchData{2,2})
+    return;
 end
 
-%Replace corresponding values in NewImg
+%Fill in pixels of NewImg where batchData has corresponding non-null values
 for line = 2:size(batchData,1)
-    imgNum = str2double(extractAfter(NewImg{line,2},size(fileName,2)+1));
-    roiNum = str2double(extractAfter(NewImg{line,3},3));
+    if batchData{line,4} == 'NULL'
+        continue;
+    end
     
-    yImgIdx = fix(imgNum/Param.xImgNum)*Param.yRoiNum ... 
-        +fix(roiNum/Param.yroiNum) + 1;
-    xImgIdx = imgNum-Param.yImgNum*fix(imgNum/Param.yImgNum);
+    imgNum = str2double(extractAfter(batchData{line,2},size(fileName,2)+1));
+    roiNum = str2double(extractAfter(batchData{line,3},3));
+    
+    yImgIdx = (ceil(imgNum/Param.xImgNum)-1)*Param.yRoiNum ...
+        + ceil(roiNum/Param.xRoiNum);
+    xImgIdx = (rem(imgNum/Param.xImgNum)-1)*Param.xRoiNum ...
+        + rem(roiNum/Param.xRoiNum);
+    
+    NewImg(yImgIdx,xImgIdx,1) = batchData{line,4};
+    NewImg(yImgIdx,xImgIdx,2) = batchData{line,5};
+    NewImg(yImgIdx, xImgIdx,3) = batchData{line,6};
     
 end
+
+%% Figure formation and saving
+
+
 
 cd(originalDir) %Return to the original directory
 
