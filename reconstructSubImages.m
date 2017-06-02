@@ -47,16 +47,19 @@ end
 NewImg = zeros(Param.yImgNum*Param.yRoiNum,Param.xImgNum*Param.xRoiNum,2);
 
 %Check to see if the analyzed images are for the correct base file
-if ~(NewImg{2,2}(1:size(fileName)) == fileName)
+if ~(NewImg{2,2}(1:size(fileName,2)) == fileName)
     disp('Error: This is not the correct batch file for %s', fileName)
     disp('This batch file has images from %S', NewImg{2,2})
 end
 
 %Replace corresponding values in NewImg
 for line = 2:size(batchData,1)
-    imgNum = int(extractAfter(NewImg{line,2},size(fileName)+1));
-    roiNum = int(extractAfter(NewImg{line,3},4));
+    imgNum = str2double(extractAfter(NewImg{line,2},size(fileName,2)+1));
+    roiNum = str2double(extractAfter(NewImg{line,3},3));
     
+    yImgIdx = fix(imgNum/Param.xImgNum)*Param.yRoiNum ... 
+        +fix(roiNum/Param.yroiNum) + 1;
+    xImgIdx = imgNum-Param.yImgNum*fix(imgNum/Param.yImgNum);
     
 end
 
