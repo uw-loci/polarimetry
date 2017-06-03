@@ -22,15 +22,15 @@ originalDir = cd(filePath);
 
 %Find the corresponding parameter file and subFolder
 [~, fileName_NE] = fileparts(fileName);
-subFolderName = fullfile(filePath, strcat(fileName_NE, ' Tiled Images'));
-paramFileName = fullfile(filePath,subFolderName,'Tiling Parameters.m');
+subImgDir = fullfile(filePath, strcat(fileName_NE, ' Tiled Images'));
+paramFileName = fullfile(subImgDir,'Tiling Parameters.m');
 
 try Param = load(paramFileName,'Param');
 catch %todo: Allow for moved parameter files 
     disp('Error: Could not find the parameter file for %s', ...
         fileName)
     disp('Please check that the file TilingParameters.m is in %s', ...
-        subFolderName)
+        subImgDir)
     return;
 end
 
@@ -77,6 +77,13 @@ for line = 2:size(batchData,1)
 end
 
 %% Figure formation and saving
+
+resultsDir = fullfile(filePath,fileName_NE); %make a results directory
+if ~(exist(resultsDir,dir)) 
+    mkdir(resultsDir);
+end
+
+save(fullfile(resultsDir,'Raw Image.m'),'NewImg'); %Save raw data
 
 
 
