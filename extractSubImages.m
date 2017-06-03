@@ -92,7 +92,7 @@ end
 %% Saving
 
 %Save the parameter file
-paramName = fullfile(subDir,'Tiling Parameters');
+paramName = fullfile(subDir,strcat('Tiling Parameters-',fileName_NE));
 save(paramName,'Param');
 
 %Return to the old directory
