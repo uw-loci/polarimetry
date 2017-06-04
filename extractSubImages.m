@@ -43,7 +43,7 @@ Param.yImgNum = fix((Param.baseImgInfo.Height-2*Param.ctBuffer)/Param.subImgWidt
 Param.totalImgNum = Param.xImgNum*Param.yImgNum;
 
 %Define two thresholds to simplify analysis by eliminating empty images.
-Param.intensityThresh = 10; %Threshold for pixel intensity
+Param.intensityThresh = 30; %Threshold for pixel intensity
 Param.pixelNumThresh = 3000; %How many pixels must be valid to anlayze the image
 
 %Get the remainder to perform an offset, so as to obtain the center of the
@@ -54,8 +54,8 @@ Param.xOffset = 1+fix(Param.xRem/2);
 Param.yOffset = 1+fix(Param.yRem/2);
 
 %Define how big the ROIs will be
-Param.roiWidth = 64;
-Param.roiHeight = 64;
+Param.roiWidth = 32;
+Param.roiHeight = 32;
 
 %Calculate the number of ROIs and any necessary offset
 Param.xRoiNum = fix(Param.subImgWidth/Param.roiWidth);
@@ -92,7 +92,7 @@ end
 %% Saving
 
 %Save the parameter file
-paramName = fullfile(subDir,strcat('Tiling Parameters-',fileName_NE));
+paramName = fullfile(subDir,strcat('Tiling Parameters-',Param.fileName_NE));
 save(paramName,'Param');
 
 %Return to the old directory
