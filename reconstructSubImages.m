@@ -62,8 +62,12 @@ for row = 2:size(batchData,1)
     if batchData{row,4} == 'NaN'
         continue;
     end
-    imgNum = str2double(extractAfter(batchData{row,2},size(fileName_NE,2)+1));
-    roiNum = str2double(extractAfter(batchData{row,3},3));
+    
+    imgStr = batchData{row,2};
+    roiStr = batchData{row,3};
+    
+    imgNum = str2double(imgStr((size(fileName_NE,2)+2):size(imgStr,2)));
+    roiNum = str2double(roiStr(4:size(roiStr,2)));
     
     yImgIdx = floor((imgNum-1)/Param.xImgNum)*Param.yRoiNum ...
         + ceil(roiNum/Param.xRoiNum);
@@ -78,14 +82,21 @@ end
 
 %% Figure formation and saving
 
-resultsDir = fullfile(filePath,strcat(fileName_NE,' Results')); %make a results directory
+resultsDir = fullfile(paramFilePath,strcat(fileName_NE,' Results')); %make a results directory
 if ~(exist(resultsDir,'dir')) 
     mkdir(resultsDir);
 end
 
-save(fullfile(resultsDir,'Raw Image.mat'),'NewImg'); %Save raw data
+
+save(fullfile(resultsDir,'Raw Image.mat'),'NewImg','batchData'); %Save raw data
+figure(1)
+imagesc(NewImg(:,:,1))
+title('Orientation')
 
 
+figure(2)
+imagesc(NewImg(:,:,2))
+title('Alignment')
 
 cd(originalDir) %Return to the original directory
 
