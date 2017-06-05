@@ -87,16 +87,22 @@ if ~(exist(resultsDir,'dir'))
     mkdir(resultsDir);
 end
 
-
+% todo : write code to check for prior results and stop overwriting if so
 save(fullfile(resultsDir,'Raw Image.mat'),'NewImg','batchData'); %Save raw data
+
+cd(resultsDir)
+
 figure(1)
 imagesc(NewImg(:,:,1))
+colormap('gray')
 title('Orientation')
-
+saveas(figure(1),fullfile(resultsDir,'Orientation.tif'))
 
 figure(2)
 imagesc(NewImg(:,:,2))
+colormap('gray')
 title('Alignment')
+saveas(figure(2),fullfile(resultsDir,'Alignment.tif'))
 
 cd(originalDir) %Return to the original directory
 
