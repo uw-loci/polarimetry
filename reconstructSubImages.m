@@ -82,27 +82,28 @@ end
 
 %% Figure formation and saving
 
+resultName = inputdlg('Base File Name:','Results Naming',[1 50],{fileName_NE});
+
 resultsDir = fullfile(paramFilePath,strcat(fileName_NE,' Results')); %make a results directory
 if ~(exist(resultsDir,'dir')) 
     mkdir(resultsDir);
 end
 
 % todo : write code to check for prior results and stop overwriting if so
-save(fullfile(resultsDir,'Raw Image.mat'),'NewImg','batchData'); %Save raw data
-
+save(fullfile(resultsDir,strcat(resultName{1},' Raw Image.mat')),'NewImg','batchData'); %Save raw data
 cd(resultsDir)
 
 figure(1)
 imagesc(NewImg(:,:,1))
 colormap('gray')
 title('Orientation')
-saveas(figure(1),fullfile(resultsDir,'Orientation.tif'))
+saveas(figure(1),fullfile(resultsDir,strcat(resultName{1},' Orientation.tif')))
 
 figure(2)
 imagesc(NewImg(:,:,2))
 colormap('gray')
 title('Alignment')
-saveas(figure(2),fullfile(resultsDir,'Alignment.tif'))
+saveas(figure(2),fullfile(resultsDir,strcat(resultName{1},' Alignment.tif')))
 
 cd(originalDir) %Return to the original directory
 
