@@ -1,8 +1,13 @@
-function numberingLogicTest(Param)
+function [yScale, xScale] = numberingLogicTest(Param)
 
 imgNum = 1;
 
-idxY = 1;
+yScale = zeros(Param.yImgNum*Param.yRoiNum, ...
+    Param.xImgNum*Param.xRoiNum);
+
+xScale = zeros(Param.yImgNum*Param.yRoiNum, ...
+    Param.xImgNum*Param.xRoiNum);
+
 for y = 1:Param.yImgNum
     
     for x = 1:Param.xImgNum
@@ -30,6 +35,9 @@ for y = 1:Param.yImgNum
                     return;
                 end
                 
+                yScale(idxY,idxX) = yImgIdx;
+                xScale(idxY, idxX) = xImgIdx; 
+                
                 roiNum = roiNum + 1;
                 idxX = idxX+1;
             end
@@ -49,5 +57,6 @@ for y = 1:Param.yImgNum
         imgNum = imgNum + 1;
     end
 end
+
 
 end
