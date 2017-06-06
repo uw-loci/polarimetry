@@ -45,7 +45,7 @@ end
 
 %Instantatiate the new parametric image.  Currently 3 dimensions, for
 %orientation (1), alignment (2), and feature number
-NewImg = zeros(Param.yImgNum*Param.yRoiNum,Param.xImgNum*Param.xRoiNum,2);
+NewImg = nan(Param.yImgNum*Param.yRoiNum,Param.xImgNum*Param.xRoiNum,2);
 
 
 %% Image information extraction
@@ -59,7 +59,7 @@ end
 
 %Fill in pixels of NewImg where batchData has corresponding non-null values
 for row = 2:size(batchData,1)
-    if batchData{row,4} == 'NaN'
+    if strcmp(batchData{row,4},'NaN')
         continue;
     end
     
@@ -82,7 +82,9 @@ end
 
 %% Figure formation and saving
 
-resultName = inputdlg('Base File Name:','Results Naming',[1 50],{fileName_NE});
+analysisType = strcat(batchData{2,7},'_',num2str(Param.roiWidth),'x',num2str(Param.roiHeight));
+resultName = inputdlg('Base File Name:','Results Naming',[1 50],{strcat(fileName_NE,'_',analysisType,'_Results')});
+
 
 resultsDir = fullfile(paramFilePath,strcat(fileName_NE,' Results')); %make a results directory
 if ~(exist(resultsDir,'dir')) 
@@ -90,20 +92,27 @@ if ~(exist(resultsDir,'dir'))
 end
 
 % todo : write code to check for prior results and stop overwriting if so
-save(fullfile(resultsDir,strcat(resultName{1},' Raw Image.mat')),'NewImg','batchData'); %Save raw data
+save(fullfile(resultsDir,strcat(resultName{1},'.mat')),'NewImg','batchData'); %Save raw data
 cd(resultsDir)
 
-figure(1)
-imagesc(NewImg(:,:,1))
-colormap('gray')
-title('Orientation')
-saveas(figure(1),fullfile(resultsDir,strcat(resultName{1},' Orientation.tif')))
+figNum = 1;
+while(ishandle(figNum))
+    figNum = figNum + 1;
+end
 
-figure(2)
+figure(figNum)
+imagesc(NewImg(:,:,1))
+colormap('jet')
+title('Orientation')
+axis off
+saveas(figure(figNum),fullfile(resultsDir,strcat(resultName{1},' Orientation.tif')))
+
+figure(figNum+1)
 imagesc(NewImg(:,:,2))
-colormap('gray')
+colormap('jet')
 title('Alignment')
-saveas(figure(2),fullfile(resultsDir,strcat(resultName{1},' Alignment.tif')))
+axis off
+saveas(figure(figNum+1),fullfile(resultsDir,strcat(resultName{1},' Alignment.tif')))
 
 cd(originalDir) %Return to the original directory
 
