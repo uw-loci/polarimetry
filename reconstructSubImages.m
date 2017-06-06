@@ -86,7 +86,7 @@ analysisType = strcat(batchData{2,7},'_',num2str(Param.roiWidth),'x',num2str(Par
 resultName = inputdlg('Base File Name:','Results Naming',[1 50],{strcat(fileName_NE,'_',analysisType,'_Results')});
 
 
-resultsDir = fullfile(paramFilePath,strcat(fileName_NE,' Results')); %make a results directory
+resultsDir = fullfile(filePath,strcat(fileName_NE,' Results')); %make a results directory
 if ~(exist(resultsDir,'dir')) 
     mkdir(resultsDir);
 end
