@@ -54,8 +54,8 @@ Param.xOffset = 1+fix(Param.xRem/2);
 Param.yOffset = 1+fix(Param.yRem/2);
 
 %Define how big the ROIs will be
-Param.roiWidth = 32;
-Param.roiHeight = 32;
+Param.roiWidth = 64;
+Param.roiHeight = 64;
 
 %Calculate the number of ROIs and any necessary offset
 Param.xRoiNum = fix(Param.subImgWidth/Param.roiWidth);
