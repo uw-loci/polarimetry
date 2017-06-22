@@ -21,30 +21,38 @@ Param.baseImgInfo = imfinfo(fileName);
 [~, Param.fileName_NE] = fileparts(fileName); %File name without extension
 
 %Define the sub-image directory
-folderName = strcat(Param.fileName_NE,' Tiled Images');
-subDir = fullfile(filePath, folderName);
-if (~exist(subDir,'dir'))
-    mkdir(subDir)
-    fprintf('Folder created: %s \n',subDir)
-else
-    fprintf('Folder exists: %s \n',subDir)
-end
+subDir = uigetdir('', 'Tiled images save directory');
 
-%Define how big you want the sub files to be
-Param.subImgWidth = 512;
-Param.subImgHeight = 512;
-Param.ctBuffer = 4; %Number of border pixels for curvelet transform.
+
+%Define how big you want the sub images to be
+[Param.subImgWidth, Param.subImgHeight, Param.ctBuffer] = ...
+    str2double(inputdlg({'Enter tiled image width:','Enter tiled image height','Enter pixel overlap buffer:'}, ...
+    'Tiled Image Parameters',...
+    [1 50, 1 50, 1 50], ...
+    {512, 512, 4}));
+    
+%Param.ctBuffer explanation: 4 is the number of border pixels for curvelet transform.
 %This generates an overlap region for the subimages, which allows analysis
-%over the full volume
+%over the full volume.  May not be necessary to change.
 
-%Find out how many full size images there are
+%Define how big the ROIs will be
+[Param.roiWidth, Param.roiHeight] = str2double(inputdlg(...
+    {'Enter ROI width:', 'Enter ROI height:'},...
+    'ROI Size',...
+    [ 1 50, 1 50],...
+    {64, 64}));
+
+%Define two thresholds to simplify analysis by eliminating empty images.
+[Param.intensityThresh, Param.pixelNumThresh] = str2double(inputdlg(...
+    {'Enter grayscale intensity threshold:','Enter minimum number of pixels above threshold:'},...
+    'Thresholding Paramaters',...
+    [1 60, 1 60],...
+    {30, 3000}));
+
+%Find out how many sub images there are
 Param.xImgNum = fix((Param.baseImgInfo.Width-2*Param.ctBuffer)/Param.subImgWidth);
 Param.yImgNum = fix((Param.baseImgInfo.Height-2*Param.ctBuffer)/Param.subImgWidth);
 Param.totalImgNum = Param.xImgNum*Param.yImgNum;
-
-%Define two thresholds to simplify analysis by eliminating empty images.
-Param.intensityThresh = 30; %Threshold for pixel intensity
-Param.pixelNumThresh = 3000; %How many pixels must be valid to anlayze the image
 
 %Get the remainder to perform an offset, so as to obtain the center of the
 %image and delete the sides
@@ -52,10 +60,6 @@ Param.xRem = rem(Param.baseImgInfo.Width - 2*Param.ctBuffer,Param.subImgWidth);
 Param.yRem = rem(Param.baseImgInfo.Height- 2*Param.ctBuffer,Param.subImgHeight);
 Param.xOffset = 1+fix(Param.xRem/2);
 Param.yOffset = 1+fix(Param.yRem/2);
-
-%Define how big the ROIs will be
-Param.roiWidth = 64;
-Param.roiHeight = 64;
 
 %Calculate the number of ROIs and any necessary offset
 Param.xRoiNum = fix(Param.subImgWidth/Param.roiWidth);
