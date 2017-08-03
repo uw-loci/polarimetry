@@ -86,7 +86,9 @@ for y = 1:Param.yImgNum
         
         %Threshold for saving to stop analysis of empty regions
         if sum(sum(subImg>Param.intensityThresh)) > Param.pixelNumThresh %A little more than 1% of pixels for 512x512
-            imgName = fullfile(subDir, sprintf('%s_%s.tif',Param.fileName_NE,num2str(imgNum)));
+            imgName = fullfile(subDir, sprintf('%s_x%s-y%s.tif',Param.fileName_NE,num2str(x),num2str(y)));
+%              Old img name format           imgName = fullfile(subDir, sprintf('%s_%s.tif',Param.fileName_NE,num2str(imgNum)));
+
             imwrite(subImg,imgName);
             generateROIs(imgName, Param);
         end

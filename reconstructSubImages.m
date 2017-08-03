@@ -66,13 +66,32 @@ for row = 2:size(batchData,1)
     imgStr = batchData{row,2};
     roiStr = batchData{row,3};
     
-    imgNum = str2double(imgStr((size(fileName_NE,2)+2):size(imgStr,2)));
+    %Extract the x an y image number 
+    xLocs = strfind(imgStr,'x');
+    xLast = xLocs(size(xLocs,2));
+    
+    yLocs = strfind(imgStr,'y');
+    yLast = yLocs(size(yLocs,2));
+    
+    tifLocs = strfind(imgStr,'.tif');
+    tifLast = tifLcos(size(tifLocs,2));
+    
+    xIdx = str2double(imgStr((xLast+1):(yLast-1)));
+    yIdx = str2double(imgStr((yLast+1):(tifLast-1)));
+    
+    %Extract the x and y img num
+    
+%     imgNum = str2double(imgStr((size(fileName_NE,2)+2):size(imgStr,2)));
     roiNum = str2double(roiStr(4:size(roiStr,2)));
     
-    yImgIdx = floor((imgNum-1)/Param.xImgNum)*Param.yRoiNum ...
-        + ceil(roiNum/Param.xRoiNum);
-    xImgIdx = rem((imgNum-1),Param.xImgNum)*Param.xRoiNum ...
-        + rem((roiNum-1),Param.xRoiNum) + 1;
+    
+    yImgIdx = (yIdx-1)*Param.yRoiNum + ceil(roiNum/Param.xRoiNum);
+    xImgIdx = (xIdx-1)*Param.xRoiNum + rem((roiNum-1),Param.xRoiNum) + 1;
+    
+%     yImgIdx = floor((imgNum-1)/Param.xImgNum)*Param.yRoiNum ...
+%         + ceil(roiNum/Param.xRoiNum);
+%     xImgIdx = rem((imgNum-1),Param.xImgNum)*Param.xRoiNum ...
+%         + rem((roiNum-1),Param.xRoiNum) + 1;
     
     NewImg(yImgIdx,xImgIdx,1) = batchData{row,4};
     NewImg(yImgIdx,xImgIdx,2) = batchData{row,5};
