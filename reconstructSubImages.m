@@ -73,11 +73,8 @@ for row = 2:size(batchData,1)
     yLocs = strfind(imgStr,'y');
     yLast = yLocs(size(yLocs,2));
     
-    tifLocs = strfind(imgStr,'.tif');
-    tifLast = tifLcos(size(tifLocs,2));
-    
-    xIdx = str2double(imgStr((xLast+1):(yLast-1)));
-    yIdx = str2double(imgStr((yLast+1):(tifLast-1)));
+    xIdx = str2double(imgStr((xLast+1):(yLast-2)));
+    yIdx = str2double(imgStr((yLast+1):size(imgStr,2)));
     
     %Extract the x and y img num
     
