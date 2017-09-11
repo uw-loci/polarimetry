@@ -1,8 +1,8 @@
-function extractSubImages()
+function autoExtractSubImages()
 %% Function explanation
-% extractSubImages.m - extractSubImages is a module for the open-souorce
+% autoExtractSubImages.m - autoExtractSubImages is a module for the open-souorce
 % software tool CurveAlign.  This function facilitates automatic analysis
-% of large stitched images by splitting the image into a large number of
+% of large stitched images by splitting each image in a folder into a large number of
 % sub-images, and then automatically producing ROIs for each of those
 % sub-images.
 
@@ -14,17 +14,16 @@ function extractSubImages()
 
 %% Open the image and define variables
 % Get the file and its information
-[fileName, filePath] = uigetfile({'*.tif';'*.*'},'Image to subdivide');
+filePath = uigetdir('','Directory of images to subdivide');
 originalDir = cd(filePath);
-img = imread(fileName);
-Param.baseImgInfo = imfinfo(fileName);
-[~, Param.fileName_NE] = fileparts(fileName); %File name without extension
+
+fileList = dir(fullfile(filePath, '*.tif'));
+
 
 %Define the sub-image directory
 subDir = uigetdir('', 'Tiled images save directory');
 
 %Define how big you want the sub images to be
-
 
 userInput = inputdlg(...
     {'Enter tiled image width:','Enter tiled image height',...
@@ -34,6 +33,7 @@ userInput = inputdlg(...
     [1 50; 1 50; 1 50; 1 50; 1 50; 1 50; 1 50],...
     {'512', '512', '4', '32', '32', '5', '1000'});
 
+
 Param.subImgWidth = floor(str2double(userInput(1)));
 Param.subImgHeight  = floor(str2double(userInput(2)));
 Param.ctBuffer  = floor(str2double(userInput(3)));
@@ -42,7 +42,7 @@ Param.roiHeight  = floor(str2double(userInput(5)));
 Param.intensityThresh  = floor(str2double(userInput(6)));
 Param.pixelNumThresh  = floor(str2double(userInput(7)));
 
-    
+
 %Param.ctBuffer explanation: 4 is the number of border pixels for curvelet transform.
 %This generates an overlap region for the subimages, which allows analysis
 %over the full volume.  May not be necessary to change.
@@ -50,61 +50,77 @@ Param.pixelNumThresh  = floor(str2double(userInput(7)));
 %Check for proper input values
 % todo: Find out how to do this, in a simple way.  
 
-%Find out how many sub images there are
-Param.xImgNum = fix((Param.baseImgInfo.Width-2*Param.ctBuffer)/Param.subImgWidth);
-Param.yImgNum = fix((Param.baseImgInfo.Height-2*Param.ctBuffer)/Param.subImgWidth);
-Param.totalImgNum = Param.xImgNum*Param.yImgNum;
 
-%Get the remainder to perform an offset, so as to obtain the center of the
-%image and delete the sides
-Param.xRem = rem(Param.baseImgInfo.Width - 2*Param.ctBuffer,Param.subImgWidth);
-Param.yRem = rem(Param.baseImgInfo.Height- 2*Param.ctBuffer,Param.subImgHeight);
-Param.xOffset = 1+fix(Param.xRem/2);
-Param.yOffset = 1+fix(Param.yRem/2);
 
-%Calculate the number of ROIs and any necessary offset
-Param.xRoiNum = fix(Param.subImgWidth/Param.roiWidth);
-Param.xRoiRem = rem(Param.subImgWidth,Param.roiWidth);
-Param.xRoiOffset = 1 + Param.ctBuffer + fix(Param.xRoiRem/2);
-
-Param.yRoiNum = fix((Param.subImgHeight)/Param.roiHeight);
-Param.yRoiRem = rem((Param.subImgHeight),Param.roiHeight);
-Param.yRoiOffset = 1 + Param.ctBuffer + fix(Param.yRoiRem/2);
 
 %% Obtain sub-images and their ROIs
-imgNum = 1;
 
-for y = 1:Param.yImgNum
-    for x = 1:Param.xImgNum
-        
-        xLow = Param.xOffset+Param.subImgWidth*(x-1);
-        yLow = Param.yOffset+Param.subImgHeight*(y-1);
-        xHigh = xLow + Param.subImgWidth-1+2*Param.ctBuffer;
-        yHigh = yLow + Param.subImgHeight-1+2*Param.ctBuffer;
-       
-        subImg = img(yLow:yHigh,xLow:xHigh);
-        
-        %Threshold for saving to stop analysis of empty regions
-        if sum(sum(subImg>Param.intensityThresh)) > Param.pixelNumThresh %A little more than 1% of pixels for 512x512
-            imgName = fullfile(subDir, sprintf('%s_x%s-y%s.tif',Param.fileName_NE,num2str(x),num2str(y)));
-%              Old img name format           imgName = fullfile(subDir, sprintf('%s_%s.tif',Param.fileName_NE,num2str(imgNum)));
-
-            imwrite(subImg,imgName);
-            generateROIs(imgName, Param);
-        end
-        imgNum = imgNum+1;
+for i = 1:max(size(fileList))
+    imgNum = 1;
+    img = imread(fileList(i).name);
+    Param.baseImgInfo = imfinfo(fileList(i).name);
+    [~, Param.fileName_NE] = fileparts(fileList(i).name); %File name without extension
+    
+    imgDir = fullfile(subDir,Param.fileName_NE);
+    if (~exist(imgDir,'dir'))
+        mkdir(imgDir)
+        fprintf('Folder created: %s \n',imgDir)
     end
+    
+    %Find out how many sub images there are
+    Param.xImgNum = fix((Param.baseImgInfo.Width-2*Param.ctBuffer)/Param.subImgWidth);
+    Param.yImgNum = fix((Param.baseImgInfo.Height-2*Param.ctBuffer)/Param.subImgWidth);
+    Param.totalImgNum = Param.xImgNum*Param.yImgNum;
+    
+    %Get the remainder to perform an offset, so as to obtain the center of the
+    %image and delete the sides
+    Param.xRem = rem(Param.baseImgInfo.Width - 2*Param.ctBuffer,Param.subImgWidth);
+    Param.yRem = rem(Param.baseImgInfo.Height- 2*Param.ctBuffer,Param.subImgHeight);
+    Param.xOffset = 1+fix(Param.xRem/2);
+    Param.yOffset = 1+fix(Param.yRem/2);
+    
+    %Calculate the number of ROIs and any necessary offset
+    Param.xRoiNum = fix(Param.subImgWidth/Param.roiWidth);
+    Param.xRoiRem = rem(Param.subImgWidth,Param.roiWidth);
+    Param.xRoiOffset = 1 + Param.ctBuffer + fix(Param.xRoiRem/2);
+    
+    Param.yRoiNum = fix((Param.subImgHeight)/Param.roiHeight);
+    Param.yRoiRem = rem((Param.subImgHeight),Param.roiHeight);
+    Param.yRoiOffset = 1 + Param.ctBuffer + fix(Param.yRoiRem/2);
+    
+    for y = 1:Param.yImgNum
+        for x = 1:Param.xImgNum
+            
+            xLow = Param.xOffset+Param.subImgWidth*(x-1);
+            yLow = Param.yOffset+Param.subImgHeight*(y-1);
+            xHigh = xLow + Param.subImgWidth-1+2*Param.ctBuffer;
+            yHigh = yLow + Param.subImgHeight-1+2*Param.ctBuffer;
+            
+            subImg = img(yLow:yHigh,xLow:xHigh);
+            
+            %Threshold for saving to stop analysis of empty regions
+            if sum(sum(subImg>Param.intensityThresh)) > Param.pixelNumThresh %A little more than 1% of pixels for 512x512
+                imgName = fullfile(imgDir, sprintf('%s_x%s-y%s.tif',Param.fileName_NE,num2str(x),num2str(y)));
+                %              Old img name format           imgName = fullfile(subDir, sprintf('%s_%s.tif',Param.fileName_NE,num2str(imgNum)));
+                
+                imwrite(subImg,imgName);
+                generateROIs(imgName, Param);
+            end
+            imgNum = imgNum+1;
+        end
+    end
+    
+    %% Saving
+    
+    %Save the parameter file
+    paramName = fullfile(imgDir, strcat(Param.fileName_NE, 'Tiling-Parameters'));
+    save(paramName,'Param');
+    
+    %Return to the old directory
+    
 end
 
-%% Saving
-
-%Save the parameter file
-paramName = fullfile(subDir,strcat('Tiling Parameters-',Param.fileName_NE));
-save(paramName,'Param');
-
-%Return to the old directory
 cd(originalDir);
-
 end
 
 
