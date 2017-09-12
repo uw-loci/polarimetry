@@ -20,9 +20,6 @@ originalDir = cd(filePath);
 fileList = dir(fullfile(filePath, '*.tif'));
 
 
-%Define the sub-image directory
-subDir = uigetdir('', 'Tiled images save directory');
-
 %Define how big you want the sub images to be
 
 userInput = inputdlg(...
@@ -56,16 +53,21 @@ Param.pixelNumThresh  = floor(str2double(userInput(7)));
 %% Obtain sub-images and their ROIs
 
 for i = 1:max(size(fileList))
+    %Read in the current image
     imgNum = 1;
     img = imread(fileList(i).name);
     Param.baseImgInfo = imfinfo(fileList(i).name);
     [~, Param.fileName_NE] = fileparts(fileList(i).name); %File name without extension
     
-    imgDir = fullfile(subDir,Param.fileName_NE);
+    imgDir = fullfile(filePath,Param.fileName_NE);
     if (~exist(imgDir,'dir'))
         mkdir(imgDir)
         fprintf('Folder created: %s \n',imgDir)
     end
+    
+    txtName = strcat(Param.fileName_NE, ' Image List.txt');
+    
+    txtFile = fopen(txtName,'w');
     
     %Find out how many sub images there are
     Param.xImgNum = fix((Param.baseImgInfo.Width-2*Param.ctBuffer)/Param.subImgWidth);
@@ -101,7 +103,11 @@ for i = 1:max(size(fileList))
             %Threshold for saving to stop analysis of empty regions
             if sum(sum(subImg>Param.intensityThresh)) > Param.pixelNumThresh %A little more than 1% of pixels for 512x512
                 imgName = fullfile(imgDir, sprintf('%s_x%s-y%s.tif',Param.fileName_NE,num2str(x),num2str(y)));
-                %              Old img name format           imgName = fullfile(subDir, sprintf('%s_%s.tif',Param.fileName_NE,num2str(imgNum)));
+                %              Old img name format           imgName = fullfile(filePath, sprintf('%s_%s.tif',Param.fileName_NE,num2str(imgNum)));
+                
+                txtDir = strcat(Param.fileName_NE,'/');
+                
+                fprintf(txtFile,strcat(txtDir,sprintf('%s_x%s-y%s.tif',Param.fileName_NE,num2str(x),num2str(y)),'\n'));
                 
                 imwrite(subImg,imgName);
                 generateROIs(imgName, Param);
@@ -110,16 +116,19 @@ for i = 1:max(size(fileList))
         end
     end
     
+    
+    
     %% Saving
     
     %Save the parameter file
-    paramName = fullfile(imgDir, strcat(Param.fileName_NE, 'Tiling-Parameters'));
+    paramName = fullfile(imgDir, strcat(Param.fileName_NE, ' Tiling-Parameters'));
     save(paramName,'Param');
     
-    %Return to the old directory
+   fclose(txtFile);
     
 end
 
+%Return to the old directory
 cd(originalDir);
 end
 
