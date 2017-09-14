@@ -117,24 +117,22 @@ for i = 1:max(size(fileList))
                 
                 %Threshold for saving to stop analysis of empty regions
                 if sum(sum(subImg>Param.intensityThresh)) > Param.pixelNumThresh %A little more than 1% of pixels for 512x512
-                    imgName = sprintf('%s_x%s-y%s.tif',Param.fileName_NE,num2str(x),num2str(y)); 
-                    
-                    imwrite(subImg,fullfile(Param.path,imgName));
+                    imgName = sprintf('%s_x%s-y%s',Param.fileName_NE,num2str(x),num2str(y));
+
+                    imwrite(subImg,fullfile(Param.path,strcat(imgName,'.tif')));
                     generateROIs(imgName, Param);
             
                     
                     
                     if picIdx == 1 %Check for a new job                 
                         jobIdx = jobIdx + 1; %
-                        tarName = strcat(Param.fileName_NE,' job-',jobIdx);      
+                        tarName = strcat(Param.fileName_NE,' job-',num2str(jobIdx),'.tar');      
 
                         fprintf(Param.csvID, strcat(Param.fileName_NE, ', ', tarName, '\n'));
                         
                     elseif picIdx == Param.jobSize %Check if the job is full
                         picIdx = 0; %Reset the picture idx for the next loop
-                        
-                        cd(imgDir)
-                        
+                                              
                         %Zip the tif files and ROI_Management folder into a single job
                         picList = dir('*.tif');
                         numPics = max(size(picList));
@@ -147,10 +145,9 @@ for i = 1:max(size(fileList))
                             tarList(j+1) = cellstr(picList(j).name);
                         end
                         
-                        tarName = strcat(Param.fileName_NE,' job-',jobIdx);      
+                        tarName = strcat(Param.fileName_NE,' job-',num2str(jobIdx),'.tar');      
                         tar(tarName, tarList)
                         
-                        cd(baseDir)
                     end
                     
                     picIdx = picIdx + 1;
@@ -161,9 +158,6 @@ for i = 1:max(size(fileList))
         
         %Write the last tar file, if it as incomplete job
         if picIdx > 1
-            
-            picIdx = 0; %Reset the picture idx for the next loop
-            
             cd(imgDir)
             
             %Zip the tif files and ROI_Management folder into a single job
@@ -178,10 +172,9 @@ for i = 1:max(size(fileList))
                 tarList(j+1) = cellstr(picList(j).name);
             end
             
-            tarName = strcat(Param.fileName_NE,' job-',jobIdx);
+            tarName = strcat(Param.fileName_NE,' job-',num2str(jobIdx),'.tar');
             tar(tarName, tarList)
             
-            cd(baseDir)
         end
         
     else %Just write out the images
@@ -197,9 +190,9 @@ for i = 1:max(size(fileList))
                 
                 %Threshold for saving to stop analysis of empty regions
                 if sum(sum(subImg>Param.intensityThresh)) > Param.pixelNumThresh %A little more than 1% of pixels for 512x512
-                    imgName = sprintf('%s_x%s-y%s.tif',Param.fileName_NE,num2str(x),num2str(y));
+                    imgName = sprintf('%s_x%s-y%s',Param.fileName_NE,num2str(x),num2str(y));
 
-                    imwrite(subImg,fullfile(Param.path,imgName));
+                    imwrite(subImg,fullfile(Param.path,strcat(imgName,'.tif')));
                     generateROIs(imgName, Param);
                 end
                 imgNum = imgNum+1;
