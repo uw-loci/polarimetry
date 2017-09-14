@@ -139,7 +139,7 @@ for i = 1:max(size(fileList))
                         
                         tarList = cell(numPics+1 , 1);
                         
-                        tarList(1) = cellstr('ROI_Management');
+                        tarList(1) = cellstr('ROI_management');
                         
                         for j = 1:max(size(picList))
                             tarList(j+1) = cellstr(picList(j).name);
@@ -148,6 +148,14 @@ for i = 1:max(size(fileList))
                         tarName = strcat(Param.fileName_NE,' job-',num2str(jobIdx),'.tar');      
                         tar(tarName, tarList)
                         
+                        %Remvoe untarred files for next job
+                        
+                        delete *.tif
+                        
+                        cd('ROI_management');
+                        delete *.mat*
+                        
+                        cd(imgDir)
                     end
                     
                     picIdx = picIdx + 1;
@@ -175,6 +183,14 @@ for i = 1:max(size(fileList))
             tarName = strcat(Param.fileName_NE,' job-',num2str(jobIdx),'.tar');
             tar(tarName, tarList)
             
+            %Remove untarred files for next job
+            
+            delete *.tif
+            
+            cd('ROI_management');
+            delete *.mat*
+                        
+            cd(imgDir)
         end
         
     else %Just write out the images
