@@ -14,14 +14,12 @@ function autoExtractSubImages()
 
 %% Open the image and define variables
 % Get the file and its information
-filePath = uigetdir('','Directory of images to subdivide');
-originalDir = cd(filePath);
+baseDir = uigetdir('','Directory of images to subdivide');
+originalDir = cd(baseDir);
 
-fileList = dir(fullfile(filePath, '*.tif'));
+fileList = dir(fullfile(baseDir, '*.tif'));
 
-
-%Define how big you want the sub images to be
-
+%User input parameters
 userInput = inputdlg(...
     {'Enter tiled image width:','Enter tiled image height',...
         'Enter pixel overlap buffer:','Enter ROI width:', 'Enter ROI height:',...
@@ -44,11 +42,24 @@ Param.pixelNumThresh  = floor(str2double(userInput(7)));
 %This generates an overlap region for the subimages, which allows analysis
 %over the full volume.  May not be necessary to change.
 
-%Check for proper input values
-% todo: Find out how to do this, in a simple way.  
+%% todo: Find out how to Check for proper input valuees in a simple way. 
 
+%% CSV File for CHTC jobs
+ isCHTC = questdlg('Do you want the output to be formatted for cluster analysis?','Center for High Throughput Computing');
+ 
 
-
+ if strcmp(isCHTC,'Yes')
+    Param.jobSize = floor(str2double(inputdlg('How many pictures per job?','Job size',1,{'1'})));
+    if Param.jobSize < 1
+        fprintf('Error: Job size is too small')
+        return
+    end
+    
+    Param.csvID = fopen('Cluster job list.csv','w'); 
+ end
+ 
+ 
+ 
 
 %% Obtain sub-images and their ROIs
 
@@ -57,17 +68,14 @@ for i = 1:max(size(fileList))
     imgNum = 1;
     img = imread(fileList(i).name);
     Param.baseImgInfo = imfinfo(fileList(i).name);
-    [~, Param.fileName_NE] = fileparts(fileList(i).name); %File name without extension
+    [Param.path, Param.fileName_NE] = fileparts(fileList(i).name); %File name without extension
     
-    imgDir = fullfile(filePath,Param.fileName_NE);
+    imgDir = fullfile(baseDir,Param.fileName_NE);
     if (~exist(imgDir,'dir'))
         mkdir(imgDir)
         fprintf('Folder created: %s \n',imgDir)
     end
-    
-    txtName = strcat(Param.fileName_NE, ' Image List.txt');
-    
-    txtFile = fopen(txtName,'w');
+    cd(imgDir)
     
     %Find out how many sub images there are
     Param.xImgNum = fix((Param.baseImgInfo.Width-2*Param.ctBuffer)/Param.subImgWidth);
@@ -90,42 +98,126 @@ for i = 1:max(size(fileList))
     Param.yRoiRem = rem((Param.subImgHeight),Param.roiHeight);
     Param.yRoiOffset = 1 + Param.ctBuffer + fix(Param.yRoiRem/2);
     
-    for y = 1:Param.yImgNum
-        for x = 1:Param.xImgNum
-            
-            xLow = Param.xOffset+Param.subImgWidth*(x-1);
-            yLow = Param.yOffset+Param.subImgHeight*(y-1);
-            xHigh = xLow + Param.subImgWidth-1+2*Param.ctBuffer;
-            yHigh = yLow + Param.subImgHeight-1+2*Param.ctBuffer;
-            
-            subImg = img(yLow:yHigh,xLow:xHigh);
-            
-            %Threshold for saving to stop analysis of empty regions
-            if sum(sum(subImg>Param.intensityThresh)) > Param.pixelNumThresh %A little more than 1% of pixels for 512x512
-                imgName = fullfile(imgDir, sprintf('%s_x%s-y%s.tif',Param.fileName_NE,num2str(x),num2str(y)));
-                %              Old img name format           imgName = fullfile(filePath, sprintf('%s_%s.tif',Param.fileName_NE,num2str(imgNum)));
+
+    if strcmp(isCHTC,'Yes') %Separate images into delineated batches 
+        
+    
+        jobIdx = 0; %To name the tar file
+        picIdx = 1; %To 
+        
+        for y = 1:Param.yImgNum
+            for x = 1:Param.xImgNum
                 
-                txtDir = strcat(Param.fileName_NE,'/');
+                xLow = Param.xOffset+Param.subImgWidth*(x-1);
+                yLow = Param.yOffset+Param.subImgHeight*(y-1);
+                xHigh = xLow + Param.subImgWidth-1+2*Param.ctBuffer;
+                yHigh = yLow + Param.subImgHeight-1+2*Param.ctBuffer;
                 
-                fprintf(txtFile,strcat(txtDir,sprintf('%s_x%s-y%s.tif',Param.fileName_NE,num2str(x),num2str(y)),'\n'));
+                subImg = img(yLow:yHigh,xLow:xHigh);
                 
-                imwrite(subImg,imgName);
-                generateROIs(imgName, Param);
+                %Threshold for saving to stop analysis of empty regions
+                if sum(sum(subImg>Param.intensityThresh)) > Param.pixelNumThresh %A little more than 1% of pixels for 512x512
+                    imgName = sprintf('%s_x%s-y%s.tif',Param.fileName_NE,num2str(x),num2str(y)); 
+                    
+                    imwrite(subImg,fullfile(Param.path,imgName));
+                    generateROIs(imgName, Param);
+            
+                    
+                    
+                    if picIdx == 1 %Check for a new job                 
+                        jobIdx = jobIdx + 1; %
+                        tarName = strcat(Param.fileName_NE,' job-',jobIdx);      
+
+                        fprintf(Param.csvID, strcat(Param.fileName_NE, ', ', tarName, '\n'));
+                        
+                    elseif picIdx == Param.jobSize %Check if the job is full
+                        picIdx = 0; %Reset the picture idx for the next loop
+                        
+                        cd(imgDir)
+                        
+                        %Zip the tif files and ROI_Management folder into a single job
+                        picList = dir('*.tif');
+                        numPics = max(size(picList));
+                        
+                        tarList = cell(numPics+1 , 1);
+                        
+                        tarList(1) = cellstr('ROI_Management');
+                        
+                        for j = 1:max(size(picList))
+                            tarList(j+1) = cellstr(picList(j).name);
+                        end
+                        
+                        tarName = strcat(Param.fileName_NE,' job-',jobIdx);      
+                        tar(tarName, tarList)
+                        
+                        cd(baseDir)
+                    end
+                    
+                    picIdx = picIdx + 1;
+                end
+                imgNum = imgNum+1;
             end
-            imgNum = imgNum+1;
+        end
+        
+        %Write the last tar file, if it as incomplete job
+        if picIdx > 1
+            
+            picIdx = 0; %Reset the picture idx for the next loop
+            
+            cd(imgDir)
+            
+            %Zip the tif files and ROI_Management folder into a single job
+            picList = dir('*.tif');
+            numPics = max(size(picList));
+            
+            tarList = cell(numPics+1 , 1);
+            
+            tarList(1) = cellstr('ROI_Management');
+            
+            for j = 1:max(size(picList))
+                tarList(j+1) = cellstr(picList(j).name);
+            end
+            
+            tarName = strcat(Param.fileName_NE,' job-',jobIdx);
+            tar(tarName, tarList)
+            
+            cd(baseDir)
+        end
+        
+    else %Just write out the images
+        for y = 1:Param.yImgNum
+            for x = 1:Param.xImgNum
+                
+                xLow = Param.xOffset+Param.subImgWidth*(x-1);
+                yLow = Param.yOffset+Param.subImgHeight*(y-1);
+                xHigh = xLow + Param.subImgWidth-1+2*Param.ctBuffer;
+                yHigh = yLow + Param.subImgHeight-1+2*Param.ctBuffer;
+                
+                subImg = img(yLow:yHigh,xLow:xHigh);
+                
+                %Threshold for saving to stop analysis of empty regions
+                if sum(sum(subImg>Param.intensityThresh)) > Param.pixelNumThresh %A little more than 1% of pixels for 512x512
+                    imgName = sprintf('%s_x%s-y%s.tif',Param.fileName_NE,num2str(x),num2str(y));
+
+                    imwrite(subImg,fullfile(Param.path,imgName));
+                    generateROIs(imgName, Param);
+                end
+                imgNum = imgNum+1;
+            end
         end
     end
     
-    
-    
     %% Saving
+    cd(baseDir);
     
     %Save the parameter file
     paramName = fullfile(imgDir, strcat(Param.fileName_NE, ' Tiling-Parameters'));
     save(paramName,'Param');
     
-   fclose(txtFile);
-    
+end
+
+if strcmp(isCHTC,'Yes') %Close the csv file
+    fclose(Param.csvID);
 end
 
 %Return to the old directory
@@ -168,16 +260,15 @@ for y = 1:Param.yRoiNum
     end
 end
 
-[path,name,~] = fileparts(imgName);
 
-roiDir = fullfile(path,'ROI_management');
+roiDir = fullfile(Param.path,'ROI_management');
 if (~exist(roiDir,'dir'))
     mkdir(roiDir)
     fprintf('Folder created: %s \n',roiDir)
 end
 
 oldFolder = cd(roiDir);
-save(strcat(name,'_ROIs'),'separate_rois');
+save(strcat(imgName,'_ROIs'),'separate_rois');
 
 cd(oldFolder);
 
