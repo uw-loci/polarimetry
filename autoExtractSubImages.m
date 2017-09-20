@@ -55,7 +55,7 @@ Param.pixelNumThresh  = floor(str2double(userInput(7)));
         return
     end
     
-    Param.csvID = fopen('Cluster job list.csv','w'); 
+    Param.csvID = fopen('ClusterJobList.csv','w'); 
  end
  
  
@@ -69,6 +69,11 @@ for i = 1:max(size(fileList))
     img = imread(fileList(i).name);
     Param.baseImgInfo = imfinfo(fileList(i).name);
     [Param.path, Param.fileName_NE] = fileparts(fileList(i).name); %File name without extension
+    
+    %We cannot have spaces in the file name for CHTC work
+    if strcmp(isCHTC,'Yes')
+        Param.fileName_NE = Param.fileName_NE(~isspace(Param.fileName_NE));
+    end
     
     imgDir = fullfile(baseDir,Param.fileName_NE);
     if (~exist(imgDir,'dir'))
@@ -126,7 +131,7 @@ for i = 1:max(size(fileList))
                     
                     if picIdx == 1 %Check for a new job                 
                         jobIdx = jobIdx + 1; %
-                        tarName = strcat(Param.fileName_NE,' job-',num2str(jobIdx),'.tar');      
+                        tarName = strcat(Param.fileName_NE,'_Job-',num2str(jobIdx),'.tar');      
 
                         fprintf(Param.csvID, strcat(Param.fileName_NE, ', ', tarName, '\n'));
                         
@@ -145,7 +150,7 @@ for i = 1:max(size(fileList))
                             tarList(j+1) = cellstr(picList(j).name);
                         end
                         
-                        tarName = strcat(Param.fileName_NE,' job-',num2str(jobIdx),'.tar');      
+                        tarName = strcat(Param.fileName_NE,'_Job-',num2str(jobIdx),'.tar');      
                         tar(tarName, tarList)
                         
                         %Remvoe untarred files for next job
@@ -180,7 +185,7 @@ for i = 1:max(size(fileList))
                 tarList(j+1) = cellstr(picList(j).name);
             end
             
-            tarName = strcat(Param.fileName_NE,' job-',num2str(jobIdx),'.tar');
+            tarName = strcat(Param.fileName_NE,'_Job-',num2str(jobIdx),'.tar');
             tar(tarName, tarList)
             
             %Remove untarred files for next job
