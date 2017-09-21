@@ -3,30 +3,30 @@ function autoExtractSubImages()
 % autoExtractSubImages.m - autoExtractSubImages is a module for the open-souorce
 % software tool CurveAlign.  This function facilitates automatic analysis
 % of large stitched images by splitting each image in a folder into a large number of
-% sub-images, and then automatically producing ROIs for each of those
+% sub-images,and then automatically producing ROIs for each of those
 % sub-images.
 
-% By Laboratory for Optical and Computational Instrumentation, UW-Madison
+% By Laboratory for Optical and Computational Instrumentation,UW-Madison
 % Since 2017
 % Developers:
-%   Michael Pinkert (module developer, May 2017-)
-%   Yuming Liu (primary contact and lead developer, May 2017-)
+%   Michael Pinkert (module developer,May 2017-)
+%   Yuming Liu (primary contact and lead developer,May 2017-)
 
 %% Open the image and define variables
 % Get the file and its information
 baseDir = uigetdir('','Directory of images to subdivide');
 originalDir = cd(baseDir);
 
-fileList = dir(fullfile(baseDir, '*.tif'));
+fileList = dir(fullfile(baseDir,'*.tif'));
 
 %User input parameters
 userInput = inputdlg(...
     {'Enter tiled image width:','Enter tiled image height',...
-        'Enter pixel overlap buffer:','Enter ROI width:', 'Enter ROI height:',...
-        'Enter grayscale intensity threshold:','Enter minimum number of pixels above threshold:'}, ...
-    'Tiled Image Parameters', ...
+        'Enter pixel overlap buffer:','Enter ROI width:','Enter ROI height:',...
+        'Enter grayscale intensity threshold:','Enter minimum number of pixels above threshold:'},...
+    'Tiled Image Parameters',...
     [1 50; 1 50; 1 50; 1 50; 1 50; 1 50; 1 50],...
-    {'512', '512', '4', '32', '32', '5', '1000'});
+    {'512','512','4','32','32','5','1000'});
 
 
 Param.subImgWidth = floor(str2double(userInput(1)));
@@ -39,7 +39,7 @@ Param.pixelNumThresh  = floor(str2double(userInput(7)));
 
 
 %Param.ctBuffer explanation: 4 is the number of border pixels for curvelet transform.
-%This generates an overlap region for the subimages, which allows analysis
+%This generates an overlap region for the subimages,which allows analysis
 %over the full volume.  May not be necessary to change.
 
 %% todo: Find out how to Check for proper input valuees in a simple way. 
@@ -68,7 +68,7 @@ for i = 1:max(size(fileList))
     imgNum = 1;
     img = imread(fileList(i).name);
     Param.baseImgInfo = imfinfo(fileList(i).name);
-    [Param.path, Param.fileName_NE] = fileparts(fileList(i).name); %File name without extension
+    [Param.path,Param.fileName_NE] = fileparts(fileList(i).name); %File name without extension
     
     %We cannot have spaces in the file name for CHTC work
     if strcmp(isCHTC,'Yes')
@@ -87,7 +87,7 @@ for i = 1:max(size(fileList))
     Param.yImgNum = fix((Param.baseImgInfo.Height-2*Param.ctBuffer)/Param.subImgWidth);
     Param.totalImgNum = Param.xImgNum*Param.yImgNum;
     
-    %Get the remainder to perform an offset, so as to obtain the center of the
+    %Get the remainder to perform an offset,so as to obtain the center of the
     %image and delete the sides
     Param.xRem = rem(Param.baseImgInfo.Width - 2*Param.ctBuffer,Param.subImgWidth);
     Param.yRem = rem(Param.baseImgInfo.Height- 2*Param.ctBuffer,Param.subImgHeight);
@@ -125,7 +125,7 @@ for i = 1:max(size(fileList))
                     imgName = sprintf('%s_x%s-y%s',Param.fileName_NE,num2str(x),num2str(y));
 
                     imwrite(subImg,fullfile(Param.path,strcat(imgName,'.tif')));
-                    generateROIs(imgName, Param);
+                    generateROIs(imgName,Param);
             
                     
                     
@@ -133,7 +133,7 @@ for i = 1:max(size(fileList))
                         jobIdx = jobIdx + 1; %
                         tarName = strcat(Param.fileName_NE,'_Job-',num2str(jobIdx),'.tar');      
 
-                        fprintf(Param.csvID, strcat(Param.fileName_NE, ', ', tarName, '\n'));
+                        fprintf(Param.csvID,strcat(Param.fileName_NE,',',tarName,'\n'));
                         
                     elseif picIdx == Param.jobSize %Check if the job is full
                         picIdx = 0; %Reset the picture idx for the next loop
@@ -142,7 +142,7 @@ for i = 1:max(size(fileList))
                         picList = dir('*.tif');
                         numPics = max(size(picList));
                         
-                        tarList = cell(numPics+1 , 1);
+                        tarList = cell(numPics+1 ,1);
                         
                         tarList(1) = cellstr('ROI_management');
                         
@@ -151,7 +151,7 @@ for i = 1:max(size(fileList))
                         end
                         
                         tarName = strcat(Param.fileName_NE,'_Job-',num2str(jobIdx),'.tar');      
-                        tar(tarName, tarList)
+                        tar(tarName,tarList)
                         
                         %Remvoe untarred files for next job
                         
@@ -169,7 +169,7 @@ for i = 1:max(size(fileList))
             end
         end
         
-        %Write the last tar file, if it as incomplete job
+        %Write the last tar file,if it as incomplete job
         if picIdx > 1
             cd(imgDir)
             
@@ -177,7 +177,7 @@ for i = 1:max(size(fileList))
             picList = dir('*.tif');
             numPics = max(size(picList));
             
-            tarList = cell(numPics+1 , 1);
+            tarList = cell(numPics+1 ,1);
             
             tarList(1) = cellstr('ROI_Management');
             
@@ -186,7 +186,7 @@ for i = 1:max(size(fileList))
             end
             
             tarName = strcat(Param.fileName_NE,'_Job-',num2str(jobIdx),'.tar');
-            tar(tarName, tarList)
+            tar(tarName,tarList)
             
             %Remove untarred files for next job
             
@@ -214,7 +214,7 @@ for i = 1:max(size(fileList))
                     imgName = sprintf('%s_x%s-y%s',Param.fileName_NE,num2str(x),num2str(y));
 
                     imwrite(subImg,fullfile(Param.path,strcat(imgName,'.tif')));
-                    generateROIs(imgName, Param);
+                    generateROIs(imgName,Param);
                 end
                 imgNum = imgNum+1;
             end
@@ -225,7 +225,7 @@ for i = 1:max(size(fileList))
     cd(baseDir);
     
     %Save the parameter file
-    paramName = fullfile(imgDir, strcat(Param.fileName_NE, ' Tiling-Parameters'));
+    paramName = fullfile(imgDir,strcat(Param.fileName_NE,' Tiling-Parameters'));
     save(paramName,'Param');
     
 end
@@ -239,7 +239,7 @@ cd(originalDir);
 end
 
 
-function generateROIs(imgName, Param)
+function generateROIs(imgName,Param)
 %Generate and save tiled ROIs for a specified image and parameters
 
 tempROI.date = datestr(now,'mm-dd-yyyy');
@@ -250,7 +250,7 @@ roiNum = 1;
 
 for y = 1:Param.yRoiNum
     for x = 1:Param.xRoiNum
-        roiName = strcat('ROI', int2str(roiNum));
+        roiName = strcat('ROI',int2str(roiNum));
         
         xLow = Param.xRoiOffset+Param.roiWidth*(x-1);
         yLow = Param.yRoiOffset+Param.roiHeight*(y-1);
@@ -259,7 +259,7 @@ for y = 1:Param.yRoiNum
         
         separate_rois.(roiName) = tempROI;
         separate_rois.(roiName).roi = [yLow,xLow,Param.roiHeight,Param.roiWidth];
-        separate_rois.(roiName).enclosing_rect = [yLow, xLow,...
+        separate_rois.(roiName).enclosing_rect = [yLow,xLow,...
             yHigh,xHigh];
         separate_rois.(roiName).xm = xLow+Param.roiWidth/2;
         separate_rois.(roiName).ym = yLow+Param.roiHeight/2;
