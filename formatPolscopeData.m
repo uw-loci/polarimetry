@@ -9,7 +9,7 @@ function formatPolscopeData()
 %position.  Then get a list of the directories
 baseDir = uigetdir(pwd, 'Select the base directory for the SMS images');
 fileList = dir(baseDir);
-dirList = fileList([fileList.isfolder]); %This gives a struct containing folder data
+dirList = fileList([fileList.isdir]); %This gives a struct containing folder data
 
 numDirs = max(size(dirList))-2; %Matlab dir returns . and ...
 
@@ -28,18 +28,59 @@ if (isnan(pixelSize) || (pixelSize <= 0))
 end
 
 %Create the new stitching metadata file
-stitchID = fopen('StitchingMetadata.txt','w');
+retID = fopen('RetardanceMetadata.txt','w');
+slowID = fopen('SlowAxisMetadata.txt','w');
+
+%Write down the number of dimensions to the stitch
+fprintf(retID, 'dim = 2\n');
+fprintf(slowID, 'dim = 2\n');
 
 for i = 1:numDirs
     metaName = fullfile(dirNames(i),'Metadata.txt');
+    
+    %Copy and rename the retardance img
     retImg = fullfile(dirNames(i),'img_000000000_1_Retardance - Computed Image_000.tif');
+    retName = strcat(dirNames{i},'-retardance.tif');
+    copyfile(retImg{1},retName)
+    
+    %copy and rename the slow axis img
     slowImg = fullfile(dirNames(i),'img_000000000_2_Slow Axis Orientation - Computed Image_000.tif');
+    slowName = strcat(dirNames{i},'-slowAxis.tif');
+    copyfile(slowImg{1},slowName)
     
-    metaText = strrep(fileread(char(metaName)),'"','');
+    %Read in the metadata to get the stage position in um
+    metaText = strrep(strrep(strrep(fileread(char(metaName)),'"',''),',',''),':',',');
+    textInCells = textscan(metaText, '%s');
     
+    pos = [0 0];
+    
+    for j = 1:size(textInCells{1},1)
+        if strcmp(textInCells{1}{j}, 'YPositionUm,')
+            pos(2) = str2double(textInCells{1}{j+1});
+            break
+        end
+    end
+    
+    for j = 1:size(textInCells{1},1)
+        if strcmp(textInCells{1}{j}, 'XPositionUm,')
+            pos(1) = str2double(textInCells{1}{j+1});
+            break
+        end
+    end
+    
+    %Convert the stage position to pixels, as the stitching algorithm
+    %position input is pixels.
+    pixelPos = pos/pixelSize;
+    
+    fprintf(retID, strcat(retName,'; ; (', num2str(pixelPos(1)), ', ',...
+        num2str(pixelPos(2)), ')\n'));
+    
+    fprintf(slowID, strcat(retName,'; ; (', num2str(pixelPos(1)), ', ',...
+        num2str(pixelPos(2)), ')\n'));
+
 end
 
-fclose('stitchID')
+fclose('all');
 
 
 
