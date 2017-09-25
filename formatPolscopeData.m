@@ -8,6 +8,7 @@ function formatPolscopeData()
 %Select the base directory that holds all the sub-folders for each stage
 %position.  Then get a list of the directories
 baseDir = uigetdir(pwd, 'Select the base directory for the SMS images');
+originalDir = cd(baseDir);
 fileList = dir(baseDir);
 dirList = fileList([fileList.isdir]); %This gives a struct containing folder data
 
@@ -24,7 +25,6 @@ end
 pixelSize = str2double(inputdlg('Pixel Size in um:','Enter the pixel size'));
 if (isnan(pixelSize) || (pixelSize <= 0))
     error('Please enter a number for the pixel size')
-    return
 end
 
 %Create the new stitching metadata file
@@ -75,14 +75,14 @@ for i = 1:numDirs
     fprintf(retID, strcat(retName,'; ; (', num2str(pixelPos(1)), ', ',...
         num2str(pixelPos(2)), ')\n'));
     
-    fprintf(slowID, strcat(retName,'; ; (', num2str(pixelPos(1)), ', ',...
+    fprintf(slowID, strcat(slowName,'; ; (', num2str(pixelPos(1)), ', ',...
         num2str(pixelPos(2)), ')\n'));
 
 end
 
 fclose('all');
 
-
+cd(originalDir);
 
 
 end
