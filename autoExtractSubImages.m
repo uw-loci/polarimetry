@@ -49,7 +49,7 @@ Param.pixelNumThresh  = floor(str2double(userInput(7)));
  
 
  if strcmp(isCHTC,'Yes')
-    Param.jobSize = floor(str2double(inputdlg('How many pictures per job?','Job size',1,{'1'})));
+    Param.jobSize = floor(str2double(inputdlg('How many pictures per job?','Job size',10,{'10'})));
     if Param.jobSize < 1
         fprintf('Error: Job size is too small')
         return
@@ -133,7 +133,7 @@ for i = 1:max(size(fileList))
                         jobIdx = jobIdx + 1; %
                         tarName = strcat(Param.fileName_NE,'_Job-',num2str(jobIdx),'.tar');      
 
-                        fprintf(Param.csvID,strcat(Param.fileName_NE,',',tarName,'\n'));
+                        fprintf(Param.csvID,strcat(tarName,'\n'));
                         
                     elseif picIdx == Param.jobSize %Check if the job is full
                         picIdx = 0; %Reset the picture idx for the next loop
@@ -179,7 +179,7 @@ for i = 1:max(size(fileList))
             
             tarList = cell(numPics+1 ,1);
             
-            tarList(1) = cellstr('ROI_Management');
+            tarList(1) = cellstr('ROI_management');
             
             for j = 1:max(size(picList))
                 tarList(j+1) = cellstr(picList(j).name);
