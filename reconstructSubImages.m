@@ -34,11 +34,15 @@ elseif ~(Param.fileName_NE == fileName_NE)
     return;
 end
 
+%todo: REformat to read individual .csv stats instead of batch stats.
+
+
+
 %Get and read the batch file
 [batchFile, batchFilePath] = uigetfile({'*.xlsx*','*.*'},'CurveAlign batch file');
 try [~,~,batchData] = xlsread(fullfile(batchFilePath,batchFile), 'CA ROI alignment analysis');
 catch
-    disp('Error: Batch data file is does not have the correct page.')
+    disp('Error: Batch data file does not have the correct page.')
     disp('The data should be on page: CA ROI alignment analysis');
     return;
 end
