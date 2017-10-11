@@ -18,7 +18,7 @@ function reconstructSubImages()
 %% Image and batch selection
 %Query the user to select a file
 [fileName, filePath] = uigetfile({'*.tif';'*.*'},'Image to reconstruct');
-originalDir = cd(filePath);
+
 [~, fileName_NE] = fileparts(fileName); %File name without extension
 
 %Get and read the tiling parameters
@@ -34,18 +34,23 @@ elseif ~(Param.fileName_NE == fileName_NE)
     return;
 end
 
-%todo: REformat to read individual .csv stats instead of batch stats.
+
+%Get the results directory where each sub image is held
+resultsDir = uigetdir('Open the image directory')';
+originalDir = cd(resultsDir);
+
+errList = dir('*CAroi_error.txt');
 
 
 
-%Get and read the batch file
-[batchFile, batchFilePath] = uigetfile({'*.xlsx*','*.*'},'CurveAlign batch file');
-try [~,~,batchData] = xlsread(fullfile(batchFilePath,batchFile), 'CA ROI alignment analysis');
-catch
-    disp('Error: Batch data file does not have the correct page.')
-    disp('The data should be on page: CA ROI alignment analysis');
-    return;
-end
+% %Get and read the batch file
+% [batchFile, batchFilePath] = uigetfile({'*.xlsx*','*.*'},'CurveAlign batch file');
+% try [~,~,batchData] = xlsread(fullfile(batchFilePath,batchFile), 'CA ROI alignment analysis');
+% catch
+%     disp('Error: Batch data file does not have the correct page.')
+%     disp('The data should be on page: CA ROI alignment analysis');
+%     return;
+% end
 
 %Instantatiate the new parametric image.  Currently 3 dimensions, for
 %orientation (1), alignment (2), and feature number
