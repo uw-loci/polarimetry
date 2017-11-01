@@ -75,7 +75,7 @@ for i = 1:max(size(fileList))
         Param.fileName_NE = Param.fileName_NE(~isspace(Param.fileName_NE));
     end
     
-    imgDir = fullfile(baseDir,Param.fileName_NE);
+    imgDir = fullfile(baseDir,strcat(Param.fileName_NE,'_Tiles'));
     if (~exist(imgDir,'dir'))
         mkdir(imgDir)
         fprintf('Folder created: %s \n',imgDir)
@@ -134,7 +134,8 @@ for i = 1:max(size(fileList))
                         tarName = strcat(Param.fileName_NE,'_Job-',num2str(jobIdx),'.tar');      
 
                         fprintf(Param.csvID,strcat(tarName,'\n'));
-                        
+                        %todo : There is an error where the last job file
+                        %is not listed.
                     elseif picIdx == Param.jobSize %Check if the job is full
                         picIdx = 0; %Reset the picture idx for the next loop
                                               
