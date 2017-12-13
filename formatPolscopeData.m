@@ -1,6 +1,6 @@
 function formatPolscopeData()
-%This function takes single image data from Polscope and formats it so
-% an be stitched using the grid/collection stitching algorith.  This
+%This function takes single image data from Polscope and formats them so
+%that they can be stitched using the grid/collection stitching algorith.  This
 % involves renaming all the files and making a metadata file that
 % references each one.
 
@@ -12,7 +12,7 @@ originalDir = cd(baseDir);
 fileList = dir(baseDir);
 dirList = fileList([fileList.isdir]); %This gives a struct containing folder data
 
-numDirs = max(size(dirList))-2; %Matlab dir returns . and ...
+numDirs = max(size(dirList))-2; %The -2 is because Matlab dir returns . and ...
 
 %This makes a list for the folder names, so that they can be referenced easily
 dirNames = cell(numDirs, 1); 
@@ -27,11 +27,12 @@ if (isnan(pixelSize) || (pixelSize <= 0))
     error('Please enter a number for the pixel size')
 end
 
-%Create the new stitching metadata file
-retID = fopen('RetardanceMetadata.txt','w');
-slowID = fopen('SlowAxisMetadata.txt','w');
+%Create the new stitching metadata files
+retID = fopen('RetTileConfiguration.txt','w');
+slowID = fopen('SlowTileConfiguration.txt','w');
 
-%Write down the number of dimensions to the stitch
+%Write down the number of dimensions to the stitch. By default, this is 2D,
+%but a prompt can be added to make it 3D.
 fprintf(retID, 'dim = 2\n');
 fprintf(slowID, 'dim = 2\n');
 
