@@ -102,11 +102,15 @@ for i = 1:size(statsList,1)
 %         + rem((roiNum-1),Param.xRoiNum) + 1;
     
     %Read in the stats file
-
     [~, col2, ~, col4] = textread(statsList(i,:), '%s %s %s %s');
     
-    NewImg(yImgIdx,xImgIdx,1) = str2double(col2(1)); %Mean = 1
+    NewImg(yImgIdx,xImgIdx,1) = str2double(col2(1)); %Mean orientation = 1
     NewImg(yImgIdx,xImgIdx,2) = str2double(col4(5)); % Alignement = 5
+    
+    
+    %Read in the corresponding .mat file, to count the number of fibers.
+    load(strcat(statsList(i,1:statsIdx-1),'_fibFeatures.mat'),'fibFeat')
+    NewImg(yImgIdx, xImgIdx,3) = size(fibFeat,1);
     
 end
 
@@ -135,6 +139,7 @@ imagesc(NewImg(:,:,1))
 colormap('jet')
 title('Orientation')
 axis off
+colorbar
 saveas(figure(figNum),fullfile(resultsDir,strcat(resultName{1},' Orientation.tif')))
 
 figure(figNum+1)
@@ -142,7 +147,17 @@ imagesc(NewImg(:,:,2))
 colormap('jet')
 title('Alignment')
 axis off
+colorbar
 saveas(figure(figNum+1),fullfile(resultsDir,strcat(resultName{1},' Alignment.tif')))
+
+figure(figNum+2)
+imagesc(NewImg(:,:,3))
+colormap('jet')
+title('Fiber segments in ROI')
+axis off
+colorbar
+saveas(figure(figNum+1),fullfile(resultsDir,strcat(resultName{1},' NumSegments.tif')))
+
 
 cd(originalDir) %Return to the original directory
 
