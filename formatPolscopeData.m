@@ -22,14 +22,26 @@ end
 
 
 %Get the pixel size in microns
-pixelSize = str2double(inputdlg('Pixel Size in um:','Enter the pixel size'));
+pixelSize = 0.677; %str2double(inputdlg('Pixel Size in um:','Enter the pixel size'));
 if (isnan(pixelSize) || (pixelSize <= 0))
     error('Please enter a number for the pixel size')
 end
 
+newDir = 'Retardance';
+if (~exist(newDir,'dir'))
+    mkdir(newDir)
+    fprintf('Folder created: %s \n',newDir)
+end
+
+newDir = 'Orientation';
+if (~exist(newDir,'dir'))
+    mkdir(newDir)
+    fprintf('Folder created: %s \n',newDir)
+end
+
 %Create the new stitching metadata files
-retID = fopen('RetTileConfiguration.txt','w');
-slowID = fopen('SlowTileConfiguration.txt','w');
+retID = fopen('Retardance\TileConfiguration.txt','w');
+slowID = fopen('Orientation\TileConfiguration.txt','w');
 
 %Write down the number of dimensions to the stitch. By default, this is 2D,
 %but a prompt can be added to make it 3D.
@@ -41,13 +53,15 @@ for i = 1:numDirs
     
     %Copy and rename the retardance img
     retImg = fullfile(dirNames(i),'img_000000000_1_Retardance - Computed Image_000.tif');
-    retName = strcat(dirNames{i},'-retardance.tif');
-    copyfile(retImg{1},retName)
+    retName = strcat(dirNames{i},'-R.tif');
+    retPath = strcat('Retardance\', retName);
+    copyfile(retImg{1},retPath)
     
     %copy and rename the slow axis img
     slowImg = fullfile(dirNames(i),'img_000000000_2_Slow Axis Orientation - Computed Image_000.tif');
-    slowName = strcat(dirNames{i},'-slowAxis.tif');
-    copyfile(slowImg{1},slowName)
+    slowName = strcat(dirNames{i},'-O.tif');
+    slowPath = strcat('Orientation\', slowName);
+    copyfile(slowImg{1},slowPath)
     
     %Read in the metadata to get the stage position in um
     metaText = strrep(strrep(strrep(fileread(char(metaName)),'"',''),',',''),':',',');
