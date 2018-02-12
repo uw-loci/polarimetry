@@ -3,13 +3,14 @@ function getROIsForCA()
 BatchProcessMode = questdlg('Do you want to process a batch (directory) of images?',...
     'Batch mode or single image mode','Yes')
 
+Params = defineROIs();
+
 if strcmp(BatchProcessMode,'Yes')
     inputDir = uigetdir('','Directory of images to be processed');
     fileList = dir(fullfile(inputDir,'*.tif'));
     
     for i = 1:size(fileList,1)
-        Params = setupParams(fileList(i));
-        Params = defineROIs(Params); %todo: Make it ask for ROI params once, instead of each time
+        Params = setupParams(fileList(i), Params);
         generateROIs(Params)
     end
 
@@ -21,7 +22,6 @@ elseif strcmp(BatchProcessMode,'No')
     file.folder = inputDir;
     
     Params = setupParams(file);
-    Params = defineROIs(Params);
     generateROIs(Params)
     
 end
