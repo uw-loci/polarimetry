@@ -1,5 +1,5 @@
 
-function generateROIs(imgName, Param)
+function generateROIs(Param)
 %Generate and save tiled ROIs for a specified image, given ROI width/height/offset parameters
 
     tempROI.date = datestr(now,'mm-dd-yyyy');
@@ -34,16 +34,14 @@ function generateROIs(imgName, Param)
         end
     end
 
-    [path,name,~] = fileparts(imgName);
-
-    roiDir = fullfile(path,'ROI_management');
+    roiDir = fullfile(Param.Path,'ROI_management');
     if (~exist(roiDir,'dir'))
         mkdir(roiDir)
         fprintf('Folder created: %s \n',roiDir)
     end
 
     oldFolder = cd(roiDir);
-    save(strcat(name,'_ROIs'),'separate_rois');
+    save(strcat(Param.ImageName,'_ROIs'),'separate_rois');
 
     cd(oldFolder);
 
