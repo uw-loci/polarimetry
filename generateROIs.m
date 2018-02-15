@@ -1,6 +1,8 @@
 
 function generateROIs(Params, Image)
 %Generate and save tiled ROIs for a specified image, given ROI width/height/offset parameters
+    
+    Image = imread(fullfile(Params.Path,Params.FileName);
 
     tempROI.date = datestr(now,'mm-dd-yyyy');
     tempROI.time = datestr(now,13);

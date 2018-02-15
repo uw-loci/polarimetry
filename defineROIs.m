@@ -1,6 +1,4 @@
 function Params = defineROIs()
-    
-
     userInput = inputdlg(...
         {'Enter ROI width:', 'Enter ROI height:'}, ...
         'Tiled Image Parameters', ...
@@ -9,5 +7,4 @@ function Params = defineROIs()
 
     Params.roiWidth = floor(str2double(userInput(1)));
     Params.roiHeight = floor(str2double(userInput(2)));
-
 return
