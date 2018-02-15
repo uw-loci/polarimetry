@@ -33,7 +33,8 @@ function generateROIs(Params, Image)
         end
     end
     
-    roiDirName = strcat('ROI_management_',num2str(Params.roiWidth),'x',num2str(Params.roiHeight));
+    roiDirName = strcat('ROI_management_',num2str(Params.roiWidth),'x',num2str(Params.roiHeight)...
+        ,'_NumThresh-', num2str(Params.pixelNumThresh), '_IntensityThresh-',num2str(Params.pixelIntensityThresh));
     
     roiDir = fullfile(Params.Path,roiDirName);
     if (~exist(roiDir,'dir'))
