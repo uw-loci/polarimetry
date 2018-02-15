@@ -1,5 +1,5 @@
 
-function generateROIs(Params)
+function generateROIs(Params, Image)
 %Generate and save tiled ROIs for a specified image, given ROI width/height/offset parameters
 
     tempROI.date = datestr(now,'mm-dd-yyyy');
@@ -12,24 +12,17 @@ function generateROIs(Params)
         for x = 1:Params.xRoiNum
             roiName = strcat('ROI', int2str(roiNum));
 
-            xLow = Params.xRoiOffset+Params.roiWidth*(x-1);
-            yLow = Params.yRoiOffset+Params.roiHeight*(y-1);
-            xHigh = xLow + Params.roiWidth-1;
-            yHigh = yLow + Params.roiHeight-1;
-
-            separate_rois.(roiName) = tempROI;
-            separate_rois.(roiName).roi = [yLow,xLow,Params.roiHeight,Params.roiWidth];
-            separate_rois.(roiName).enclosing_rect = [yLow, xLow,...
-                yHigh,xHigh];
-            separate_rois.(roiName).xm = xLow+Params.roiWidth/2;
-            separate_rois.(roiName).ym = yLow+Params.roiHeight/2;
-            separate_rois.(roiName).boundary = ...
-                {[xLow,yLow;...
-                xLow,yHigh;...
-                xHigh,yHigh;...
-                xHigh,yLow;...
-                xLow,yLow]};
-
+            Params.xLow = Params.xRoiOffset+Params.roiWidth*(x-1);
+            Params.yLow = Params.yRoiOffset+Params.roiHeight*(y-1);
+            Params.xHigh = Params.xLow + Params.roiWidth-1;
+            Params.yHigh = Params.yLow + Params.roiHeight-1;
+               
+            ROI_Image = Image(yLow:yHigh,xLow:xHigh);
+            
+            %if strcmp(thresholdROI(ROI_Image, pixelNumThres, pixelIntensityThresh), 'Yes')
+                separate_rois.(roiName) = createCA_ROI(ROI_Image, Params);
+            %end
+            
             roiNum = roiNum + 1;
         end
     end
