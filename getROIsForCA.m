@@ -1,13 +1,15 @@
 function getROIsForCA()
 
 BatchProcessMode = questdlg('Do you want to process a batch (directory) of images?',...
-    'Batch mode or single image mode','Yes')
-
-BaseParams = defineROIs();
+    'Batch mode or single image mode','Yes');
 
 if strcmp(BatchProcessMode,'Yes')
-    %Params = defineROIs();
-    
+    BaseParams = defineROIs();
+    if any(structfun(@isnan, BaseParams))
+       warning('Invalid Parameter inputs.  Please use integers.')
+       return
+    end
+
     inputDir = uigetdir('','Directory of images to be processed');
     fileList = dir(fullfile(inputDir,'*.tif'));
     
@@ -18,7 +20,11 @@ if strcmp(BatchProcessMode,'Yes')
 
    
 elseif strcmp(BatchProcessMode,'No')
-    %Params = defineROIs();
+    BaseParams = defineROIs();
+    if any(structfun(@isnan, BaseParams))
+       warning('Invalid Parameter inputs.  Please use integers.')
+       return
+    end
     
     [fileName, inputDir] = uigetfile({'*.tif';'*.*'},'Image to process');
  

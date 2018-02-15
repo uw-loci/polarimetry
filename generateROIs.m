@@ -2,8 +2,10 @@
 function generateROIs(Params, Image)
 %Generate and save tiled ROIs for a specified image, given ROI width/height/offset parameters
     
-    Image = imread(fullfile(Params.Path,Params.FileName);
-
+    Image = imread(fullfile(Params.Path,Params.FileName));
+    pixelNumThresh = Params.roiWidth*Params.roiHeight*Params.pixelNumThresh/100;
+    pixelIntensityThresh = max(max(Image))*Params.pixelIntensityThresh/100;
+            
     tempROI.date = datestr(now,'mm-dd-yyyy');
     tempROI.time = datestr(now,13);
     tempROI.shape = 1;
@@ -19,11 +21,13 @@ function generateROIs(Params, Image)
             Params.xHigh = Params.xLow + Params.roiWidth-1;
             Params.yHigh = Params.yLow + Params.roiHeight-1;
                
-            ROI_Image = Image(yLow:yHigh,xLow:xHigh);
+            ROI_Image = Image(Params.yLow:Params.yHigh,Params.xLow:Params.xHigh);
             
-            %if strcmp(thresholdROI(ROI_Image, pixelNumThres, pixelIntensityThresh), 'Yes')
-                separate_rois.(roiName) = createCA_ROI(ROI_Image, Params);
-            %end
+
+            
+            if thresholdROI(ROI_Image, pixelNumThresh, pixelIntensityThresh)
+                separate_rois.(roiName) = createCA_ROI(ROI_Image, Params, tempROI);
+            end
             
             roiNum = roiNum + 1;
         end

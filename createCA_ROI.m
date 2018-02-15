@@ -1,4 +1,4 @@
-function CA_ROI = createCA_ROI(ROI, Params)
+function CA_ROI = createCA_ROI(ROI, Params, tempROI)
 
     CA_ROI = tempROI;
     CA_ROI.roi = [Params.yLow,Params.xLow,Params.roiHeight,Params.roiWidth];
