@@ -17,10 +17,12 @@ function generateROIs(Params, Image)
             roiName = strcat('ROI', int2str(roiNum));
 
             Params.xLow = Params.xRoiOffset+Params.roiWidth*(x-1);
-            Params.yLow = Params.yRoiOffset+Params.roiHeight*(y-1);
             Params.xHigh = Params.xLow + Params.roiWidth-1;
+
+            Params.yLow = Params.yRoiOffset+Params.roiHeight*(y-1);
             Params.yHigh = Params.yLow + Params.roiHeight-1;
                
+            
             ROI_Image = Image(Params.yLow:Params.yHigh,Params.xLow:Params.xHigh);
             
 
