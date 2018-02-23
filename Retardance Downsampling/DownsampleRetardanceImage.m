@@ -22,22 +22,19 @@ function [downRet, downOrient] = DownsampleRetardanceImage(retImgPath, orientImg
     downRet = nan(xPixelNum, yPixelNum);
     downOrient = downRet; 
 
-    for y = 0:(yPixelNum-1)
-        for x = 0:(xPixelNum-1)
+    for y = 1:yPixelNum
+        for x = 1:xPixelNum
             
-            xStart = (x*scaleFactor)+xOffset;
-            xEnd = ((x+1)*scaleFactor)+xOffset;
-            
-            yStart = (y*scaleFactor)+yOffset;
-            yEnd = ((y+1)*scaleFactor)+yOffset;
-            
+            [xStart, xEnd] = getTileStartEndIndex(x, scaleFactor, xOffset);
+            [yStart, yEnd] = getTileStartEndIndex(y, scaleFactor, yOffset);
+
             retNeighborhood = retImg(xStart:xEnd,yStart:yEnd);
             orientNeighborhood = orientImg(xStart:xEnd,yStart:yEnd);
             
-            [tempRetPixel, tempOrientPixel] = calculateRetardanceOverArea(retNeighborhood,orientNeighborhood);
+            [retPixel, orientPixel] = calculateRetardanceOverArea(retNeighborhood,orientNeighborhood);
            
-            downRet(x+1,y+1) = tempRetPixel;
-            downOrient(x+1,y+1) = tempOrientPixel;
+            downRet(x,y) = retPixel;
+            downOrient(x,y) = orientPixel;
         end
     end
 
