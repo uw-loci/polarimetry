@@ -15,20 +15,12 @@ function [downRet, downOrient] = DownsampleRetardanceImage(retImgPath, orientImg
     end
     
     imgSize = size(retImg);
-
-    xPixelNum = fix(imgSize(1)/scaleFactor);
-    yPixelNum = fix(imgSize(2)/scaleFactor);
     
-    xRem = rem(imgSize(1),scaleFactor);
-    yRem = rem(imgSize(2),scaleFactor);
-    
-    xOffset = fix(xRem/2);
-    yOffset = fix(yRem/2);
+    [xPixelNum, xOffset] = calculateNumberOfTiles(imgSize(1), scaleFactor);
+    [yPixelNum, yOffset] = calculateNumberOfTiles(imgSize(2), scaleFactor);
     
     downRet = nan(xPixelNum, yPixelNum);
     downOrient = downRet; 
-
-    
 
     for y = 0:(yPixelNum-1)
         for x = 0:(xPixelNum-1)
