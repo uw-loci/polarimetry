@@ -13,8 +13,8 @@ function [downRet, downOrient] = DownsampleRetardanceImage(retImg, orientImg, sc
     
     imgSize = size(retImg);
 
-    xDownPixelNum = fix(imgSize(1)/scaleFactor);
-    yDownPixelNum = fix(imgSize(2)/scaleFactor);
+    xPixelNum = fix(imgSize(1)/scaleFactor);
+    yPixelNum = fix(imgSize(2)/scaleFactor);
     
     xRem = rem(imgSize(1),scaleFactor);
     yRem = rem(imgSize(2),scaleFactor);
@@ -22,13 +22,13 @@ function [downRet, downOrient] = DownsampleRetardanceImage(retImg, orientImg, sc
     xOffset = fix(xRem/2);
     yOffset = fix(yRem/2);
     
-    downRet = nan(xDownPixelNum, yDownPixelNum);
+    downRet = nan(xPixelNum, yPixelNum);
     downOrient = downRet; 
 
     
 
-    for y = 0:(yDownPixelNum-1)
-        for x = 0:(xDownPixelNum-1)
+    for y = 0:(yPixelNum-1)
+        for x = 0:(xPixelNum-1)
             
             xStart = (x*scaleFactor)+xOffset;
             xEnd = ((x+1)*scaleFactor)+xOffset;
