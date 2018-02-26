@@ -31,7 +31,7 @@ function [dirOneImagePaths, dirTwoImagePaths] = findSharedImages(dirOne, dirTwo)
                 dirOneImagePaths(numberOfPairedImages) = tempCellOne;
                 
                 tempCellTwo.basePath = fullfile(fileListTwo(j).folder, fileListTwo(j).name);
-                dirTwoImagePaths(numberOfPairedImages,:) = tempCellTwo.basePath;
+                dirTwoImagePaths(numberOfPairedImages) = tempCellTwo;
             end
             
         end

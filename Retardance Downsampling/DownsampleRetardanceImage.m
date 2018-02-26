@@ -4,7 +4,7 @@ function [downRet, downOrient] = DownsampleRetardanceImage(retImgPath, orientImg
     orientImg = imread(orientImgPath);
 
     if size(retImg) ~= size(orientImg)
-        warning('The retardance and orientation image sizes do not match.Please select inputs from the same image')    
+        warning('The retardance and orientation image sizes do not match.  Please select inputs from the same image')    
         return
     end
 
