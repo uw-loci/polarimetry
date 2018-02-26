@@ -6,7 +6,6 @@ function BatchDownsampleRetardance(scaleFactor)
     % match ret to orient
     
     outputSuffix = strcat('Downsampled-by-', num2str(scaleFactor), 'x.tif');
-
     
     [retImgList, orientImgList] = findSharedImages(retDir, orientDir);
     
