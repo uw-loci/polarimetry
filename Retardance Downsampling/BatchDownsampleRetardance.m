@@ -11,7 +11,7 @@ function BatchDownsampleRetardance(scaleFactor)
     
     for i = 1:size(orientImgList(1))
         
-        [downsampledRetImg, downsampledOrientImg] = DownsampleRetardanceImage(retImgList(i), orientImgList(i));
+        [downsampledRetImg, downsampledOrientImg] = DownsampleRetardanceImage(retImgList(i).basePath, orientImgList(i).basePath);
         
         saveTextImageWithSuffix(downsampledRetImg, retImgList(i), outputSuffix, outputDir);
         saveTextImageWithSuffix(downsampledOrientImg, orientImgList(i), outputSuffix, outputDir);
