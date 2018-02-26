@@ -3,11 +3,11 @@ function Params = setupParams(file, Params)
     
     [~, name, ~] = fileparts(file.name);
     fileInfo = imfinfo(fullfile(file.folder,file.name));
-   
-    
+
     Params.FileInfo = fileInfo;
     Params.Path = file.folder;
     Params.ImageName = name;
+    Params.FileName = file.name;
     
     Params.xImgNum = 1;
     Params.yImgNum = 1;
@@ -15,7 +15,6 @@ function Params = setupParams(file, Params)
     
     Params.subImgWidth = fileInfo.Width;
     Params.subImgHeight = fileInfo.Height;
-
 
     Params.xRoiNum = fix(Params.subImgWidth/Params.roiWidth);
     Params.xRoiRem = rem(Params.subImgWidth,Params.roiWidth);
