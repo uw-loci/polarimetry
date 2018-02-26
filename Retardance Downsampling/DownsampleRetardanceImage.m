@@ -1,5 +1,9 @@
-function [downRet, downOrient] = DownsampleRetardanceImage(retImgPath, orientImgPath, scaleFactor)
-    
+function [downRet, downOrient] = DownsampleRetardanceImage(retImgPath, orientImgPath, scalePixelFactor, simulatedResolutionFactor)
+
+    if ~simulatedResolutionFactor
+        simulatedResolutionFactor = scalePixelFactor;
+    end
+
     retImg = imread(retImgPath);
     orientImg = imread(orientImgPath);
 
@@ -8,16 +12,16 @@ function [downRet, downOrient] = DownsampleRetardanceImage(retImgPath, orientImg
         return
     end
 
-    if rem(scaleFactor,1) ~= 0
-        warning('The scale factor needs to be a positive integer, representing the number of pixels that compose the new pixel value')
+    if (rem(scalePixelFactor,1) ~= 0) || (rem(simulatedResolutionFactor,1) ~= 0)
+        warning('The scale factor(s) needs to be a positive integer, representing the number of pixels that compose the new pixel value')
         return
         %todo: allow non-integer resolution scaling
     end
     
     imgSize = size(retImg);
     
-    [xPixelNum, xOffset] = calculateNumberOfTiles(imgSize(1), scaleFactor);
-    [yPixelNum, yOffset] = calculateNumberOfTiles(imgSize(2), scaleFactor);
+    [xPixelNum, xOffset] = calculateNumberOfTiles(imgSize(1), scalePixelFactor, simulatedResolutionFactor);
+    [yPixelNum, yOffset] = calculateNumberOfTiles(imgSize(2), scalePixelFactor, simulatedResolutionFactor);
     
     downRet = nan(xPixelNum, yPixelNum);
     downOrient = downRet; 
@@ -25,8 +29,9 @@ function [downRet, downOrient] = DownsampleRetardanceImage(retImgPath, orientImg
     for y = 1:yPixelNum
         for x = 1:xPixelNum
             
-            [xStart, xEnd] = getTileStartEndIndex(x, scaleFactor, xOffset);
-            [yStart, yEnd] = getTileStartEndIndex(y, scaleFactor, yOffset);
+            [xStart, xEnd] = getTileStartEndIndex(x, scalePixelFactor, xOffset, simulatedResolutionFactor);
+            [yStart, yEnd] = getTileStartEndIndex(y, scalePixelFactor, yOffset, simulatedResolutionFactor);    
+
 
             retNeighborhood = retImg(xStart:xEnd,yStart:yEnd);
             orientNeighborhood = orientImg(xStart:xEnd,yStart:yEnd);
