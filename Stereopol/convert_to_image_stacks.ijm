@@ -15,32 +15,35 @@ if (File.exists(unmodified_dir) == 0) {
 	File.makeDirectory(unmodified_dir);
 }
 
+
 run("Bio-Formats Importer", "open=[" + path + "] color_mode=Default open_all_series rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT");
-
-
 ids = newArray(nImages); 
 titles = newArray(nImages);
 
+//Save unmodified images
 for (i=0; i<nImages; i++) { 
         selectImage(i+1); 
-        temp_title = split(getTitle, "( - )"); 
-
-		output_name = unmodified_dir + temp_title[1] + '.ome.tif';
-		run("Bio-Formats Exporter", "save=[" + output_name + "] export compression=Uncompressed");
+        titles[i] = getTitle;
         
-        titles[i] = temp_title[1];
-        ids[i]=getImageID; 
+        stack_name = split(titles[i],"( - )");
+		output_name = unmodified_dir + stack_name[1] + '.ome.tif';
+		run("Bio-Formats Exporter", "save=[" + output_name + "] export compression=Uncompressed");
 }
 
-//num_to_process = nImages;
+num_to_process = nImages;
 
-//flat_image = open(flat_field)
+//Divide by flat field and save modified images
+open(flat_field);
+flat_field_title = getTitle;
 
-//for (i = 0; i < num_to_process, i++){
-	//corrected_image = imageCalculator("Divide create 32-bit stack", selectImage(ids[i]), flat_image);
-	//output_name = output_dir + temp_title[1] + '.ome.tif';
-	//run("Bio-Formats Exporter", "save=[" + output_name + "] export compression=Uncompressed");
-//}
+for (i = 0; i < num_to_process; i++){
+	imageCalculator("Divide create 32-bit stack", titles[i], flat_field_title);
+	
+	stack_name = split(titles[i],"( - )");
+	output_name = output_dir + stack_name[1] + '.ome.tif';
+	run("Bio-Formats Exporter", "save=[" + output_name + "] export compression=Uncompressed");
+	close(getTitle);
+}
 
 
 
