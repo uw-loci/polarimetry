@@ -8,6 +8,7 @@ function formatPolscopeData()
 %Select the base directory that holds all the sub-folders for each stage
 %position.  Then get a list of the directories
 baseDir = uigetdir(pwd, 'Select the base directory for the SMS images');
+display(baseDir);
 originalDir = cd(baseDir);
 fileList = dir(baseDir);
 dirList = fileList([fileList.isdir]); %This gives a struct containing folder data
@@ -22,7 +23,7 @@ end
 
 
 %Get the pixel size in microns
-pixelSize = 0.677; %str2double(inputdlg('Pixel Size in um:','Enter the pixel size'));
+pixelSize = str2double(inputdlg('Pixel Size in um:','Enter the pixel size'));
 if (isnan(pixelSize) || (pixelSize <= 0))
     error('Please enter a number for the pixel size')
 end
@@ -33,6 +34,13 @@ if (~exist(newDir,'dir'))
     fprintf('Folder created: %s \n',newDir)
 end
 
+basicDir = strcat(newDir,'\BaSiC\');
+
+if (~exist(basicDir,'dir'))
+    mkdir(basicDir)
+    fprintf('Folder created: %s \n',basicDir)
+end
+
 newDir = 'Orientation';
 if (~exist(newDir,'dir'))
     mkdir(newDir)
@@ -40,7 +48,7 @@ if (~exist(newDir,'dir'))
 end
 
 %Create the new stitching metadata files
-retID = fopen('Retardance\TileConfiguration.txt','w');
+retID = fopen('Retardance\BaSiC\TileConfiguration.txt','w');
 slowID = fopen('Orientation\TileConfiguration.txt','w');
 
 %Write down the number of dimensions to the stitch. By default, this is 2D,
