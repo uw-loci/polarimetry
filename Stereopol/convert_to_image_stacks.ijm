@@ -1,3 +1,4 @@
+close("*")
 
 file_dir = "F:\\Box Sync\\Research\\Polarimetry\\Stitched Images - Co-register\\";
 
@@ -25,6 +26,13 @@ function get_czi_files_from_list(list){
 	return czi_list;
 }
 
+function append(arr, value) {
+     arr2 = newArray(arr.length+1);
+     for (i=0; i<arr.length; i++)
+        arr2[i] = arr[i];
+     arr2[arr.length] = value;
+     return arr2;
+}
 
 function save_unmodified_images(file_dir, sample_file){
 	sample_split = split(sample_file, ".");
