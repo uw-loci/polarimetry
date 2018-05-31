@@ -25,7 +25,7 @@ function correct_flat_field(image, flat_field_dir){
 	run("Images to Stack", "name=" + position + " title=[] use");
 
 	output_name = sampledir[0] + position;
-	run("16-bit");
+	
 	run("Properties...", "channels=1 slices=1 frames=24 unit=micron pixel_width=2.016 pixel_height=2.016 voxel_depth=1.0000000");
 	run("Bio-Formats Exporter", "save=[" + output_name + "] export compression=Uncompressed");
 
