@@ -1,10 +1,10 @@
 close("*")
 
 file_dir = "F:\\Box Sync\\Research\\Polarimetry\\Data 01 - Raw and imageJ proccessed images\\New Mueller Data\\";
-save_dir = "F:\\Box Sync\\Research\\Polarimetry\\Data 02 - Python prepped images\\SterLR_Large\\";
+save_dir = "F:\\Box Sync\\Research\\Polarimetry\\Data 02 - Python prepped images\\MLR_Large\\";
+orientation_dir = "F:\\Box Sync\\Research\\Polarimetry\\Data 02 - Python prepped images\\MLR_Large\\Orientation\\";
 
-file_list = get_filetype_from_dir(file_dir, "csv");
-Array.print(file_list)
+file_list = get_filetype_from_dir(file_dir, 'csv');
 
 convert_images(file_list, file_dir, save_dir);
 
