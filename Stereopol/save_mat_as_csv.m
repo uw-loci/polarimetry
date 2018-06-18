@@ -10,8 +10,8 @@ function save_mat_as_csv(file_dir)
             continue
         end
         
-        load(file_path);
-        csvwrite(csv_path, 'LR_final');
+        load(file_path, 'LR_final');
+        csvwrite(csv_path, LR_final);
     end
     
     cd(original_dir)
