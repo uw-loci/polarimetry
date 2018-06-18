@@ -1,28 +1,29 @@
 close("*")
 
-file_dir = "F:\\Box Sync\\Research\\Polarimetry\\Data 01 - Raw and imageJ proccessed images\\New Mueller Data\\";
+file_dir = "F:\\Box Sync\\Research\\Polarimetry\\Data 01 - Raw and imageJ proccessed images\\MMP\\MLR\\";
 save_dir = "F:\\Box Sync\\Research\\Polarimetry\\Data 02 - Python prepped images\\MLR_Large\\";
-orientation_dir = "F:\\Box Sync\\Research\\Polarimetry\\Data 02 - Python prepped images\\MLR_Large\\Orientation\\";
+suffix = "MLR_Large";
+
 
 file_list = get_filetype_from_dir(file_dir, 'csv');
 
-convert_images(file_list, file_dir, save_dir);
+convert_images(file_list, file_dir, save_dir, suffix);
 
-function convert_images(file_list, file_dir, save_dir){
+function convert_images(file_list, file_dir, save_dir, suffix){
 	for (i = 0; i < file_list.length; i++){
 		file_parts = split(file_list[i], '_');
 		sample_name = file_parts[0];
 	
 		csv_path = file_dir + file_list[i];
-		tif_path = save_dir + sample_name + "_SterLR_Large.tif";
+		
+		tif_path = save_dir + sample_name + "_" + suffix + ".tif";
 
 		if (File.exists(tif_path) == 0) {
 			run("Text Image... ", "open=[" + csv_path + "]");
-			run("Rotate 90 Degrees Left");
+			run("Rotate 90 Degrees Right");
 			run("Save", "save=[" + tif_path + "]");
+			close();
 		}
-
-		close();
 	}
 }
 
