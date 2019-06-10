@@ -1,7 +1,7 @@
 % %% Set paramaters
-images_dir = 'F:/Research/Polarimetry/Data 01 - Raw and imageJ proccessed images/Mueller raw/MHR Registered';
-results_dir = 'F:/Research/Polarimetry/Data 01 - Raw and imageJ proccessed images/Mueller raw/Results';
-blank_path = 'F:/Research/Polarimetry/Data 01 - Raw and imageJ proccessed images/Mueller raw/blank.czi'; %Name blank sample directory
+images_dir = 'F:/Research/Polarimetry/Data 01 - Raw and imageJ proccessed images/Mueller raw/HR Registered/Test';
+results_dir = 'F:/Research/Polarimetry/Data 01 - Raw and imageJ proccessed images/Mueller raw/HR Results';
+blank_path = 'F:/Research/Polarimetry/Data 01 - Raw and imageJ proccessed images/Mueller raw/HR Registered/blank'; %Name blank sample directory
 num_steps=20;
 
 list_image_dirs = GetSubDirsFirstLevelOnly(images_dir);
@@ -28,7 +28,7 @@ for i = 1:size(list_image_dirs, 2)
     filter = 0; % 1=true 0=false
     EigenvalueCalibration = 0; % 1=true 0=false
     longexposure = 0;
-    resize = 1;
+    resize = 0;
     coreg_small = 1;
     SingleBlank = 1;
     Save = 1; %1 = true(saves) 0=false
@@ -39,33 +39,33 @@ for i = 1:size(list_image_dirs, 2)
     % Load Sample Polarizations (Sout)
     base_file_str = strcat(images_dir, sample, sample, '_');
 
-    HHout=imread(strcat(base_file_str, '1', '.tif'));
-    HBout=imread(strcat(base_file_str, '2', '.tif'));
-    HPout=imread(strcat(base_file_str, '3', '.tif'));
-    HVout=imread(strcat(base_file_str, '4', '.tif'));
-    HRout=imread(strcat(base_file_str, '19', '.tif'));
-    HLout=imread(strcat(base_file_str, '24', '.tif'));
+    HHout=imread(strcat(base_file_str, '1', '.tif'))+ 0.000001;
+    HBout=imread(strcat(base_file_str, '2', '.tif'))+ 0.000001;
+    HPout=imread(strcat(base_file_str, '3', '.tif'))+ 0.000001;
+    HVout=imread(strcat(base_file_str, '4', '.tif'))+ 0.000001;
+    HRout=imread(strcat(base_file_str, '19', '.tif'))+ 0.000001;
+    HLout=imread(strcat(base_file_str, '24', '.tif'))+ 0.000001;
 
-    PHout=imread(strcat(base_file_str, '7', '.tif'));
-    PBout=imread(strcat(base_file_str, '8', '.tif'));
-    PPout=imread(strcat(base_file_str, '6', '.tif'));
-    PVout=imread(strcat(base_file_str, '5', '.tif'));
-    PRout=imread(strcat(base_file_str, '20', '.tif'));
-    PLout=imread(strcat(base_file_str, '23', '.tif'));
+    PHout=imread(strcat(base_file_str, '7', '.tif'))+ 0.000001;
+    PBout=imread(strcat(base_file_str, '8', '.tif'))+ 0.000001;
+    PPout=imread(strcat(base_file_str, '6', '.tif'))+ 0.000001;
+    PVout=imread(strcat(base_file_str, '5', '.tif'))+ 0.000001;
+    PRout=imread(strcat(base_file_str, '20', '.tif'))+ 0.000001;
+    PLout=imread(strcat(base_file_str, '23', '.tif'))+ 0.000001;
 
-    VHout=imread(strcat(base_file_str, '10', '.tif'));
-    VBout=imread(strcat(base_file_str, '9', '.tif'));
-    VPout=imread(strcat(base_file_str, '11', '.tif'));
-    VVout=imread(strcat(base_file_str, '12', '.tif'));
-    VRout=imread(strcat(base_file_str, '21', '.tif'));
-    VLout=imread(strcat(base_file_str, '22', '.tif'));
+    VHout=imread(strcat(base_file_str, '10', '.tif'))+ 0.000001;
+    VBout=imread(strcat(base_file_str, '9', '.tif'))+ 0.000001;
+    VPout=imread(strcat(base_file_str, '11', '.tif'))+ 0.000001;
+    VVout=imread(strcat(base_file_str, '12', '.tif'))+ 0.000001;
+    VRout=imread(strcat(base_file_str, '21', '.tif'))+ 0.000001;
+    VLout=imread(strcat(base_file_str, '22', '.tif'))+ 0.000001;
 
-    RHout=imread(strcat(base_file_str, '15', '.tif'));
-    RBout=imread(strcat(base_file_str, '16', '.tif'));
-    RPout=imread(strcat(base_file_str, '14', '.tif'));
-    RVout=imread(strcat(base_file_str, '13', '.tif'));
-    RRout=imread(strcat(base_file_str, '18', '.tif'));
-    RLout=imread(strcat(base_file_str, '17', '.tif'));
+    RHout=imread(strcat(base_file_str, '15', '.tif'))+ 0.000001;
+    RBout=imread(strcat(base_file_str, '16', '.tif'))+ 0.000001;
+    RPout=imread(strcat(base_file_str, '14', '.tif'))+ 0.000001;
+    RVout=imread(strcat(base_file_str, '13', '.tif'))+ 0.000001;
+    RRout=imread(strcat(base_file_str, '18', '.tif'))+ 0.000001;
+    RLout=imread(strcat(base_file_str, '17', '.tif'))+ 0.000001;
 
     time_LoadCZI1=toc
 
@@ -141,40 +141,70 @@ for i = 1:size(list_image_dirs, 2)
     %% Load Input Polarizations (Sin)
     tic
 
-    datain = bfopen(blank_path);
 
-    HH_blank=single(datain{1, 1}{1, 1});
-    HB_blank=single(datain{1, 1}{2, 1});
-    HP_blank=single(datain{1, 1}{3, 1});
-    HV_blank=single(datain{1, 1}{4, 1});
-    HR_blank=single(datain{1, 1}{19, 1});
-    HL_blank=single(datain{1, 1}{24, 1});
-    PH_blank=single(datain{1, 1}{7, 1});
-    PB_blank=single(datain{1, 1}{8, 1});
-    PP_blank=single(datain{1, 1}{6, 1});
-    PV_blank=single(datain{1, 1}{5, 1});
-    PR_blank=single(datain{1, 1}{20, 1});
-    PL_blank=single(datain{1, 1}{23, 1});
-    VH_blank=single(datain{1, 1}{10, 1});
-    VB_blank=single(datain{1, 1}{9, 1});
-    VP_blank=single(datain{1, 1}{11, 1});
-    VV_blank=single(datain{1, 1}{12, 1});
-    VR_blank=single(datain{1, 1}{21, 1});
-    VL_blank=single(datain{1, 1}{22, 1});
-    RH_blank=single(datain{1, 1}{15, 1});
-    RB_blank=single(datain{1, 1}{16, 1});
-    RP_blank=single(datain{1, 1}{14, 1});
-    RV_blank=single(datain{1, 1}{13, 1});
-    RR_blank=single(datain{1, 1}{18, 1});
-    RL_blank=single(datain{1, 1}{17, 1});
 
     clear datain;
 
     time_loadCZI2=toc
 
-    %%
-    if SingleBlank==1
+    %% assemble blank
+%     datain = bfopen(blank_path);
 
+    if SingleBlank==1
+            blank_str = strcat(blank_path, '/blank_');
+            HH_blank=imread(strcat(blank_str, '1', '.tif')) + 0.000001;
+            HB_blank=imread(strcat(blank_str, '2', '.tif')) + 0.000001;
+            HP_blank=imread(strcat(blank_str, '3', '.tif')) + 0.000001;
+            HV_blank=imread(strcat(blank_str, '4', '.tif')) + 0.000001;
+            HR_blank=imread(strcat(blank_str, '19', '.tif')) + 0.000001;
+            HL_blank=imread(strcat(blank_str, '24', '.tif')) + 0.000001;
+
+            PH_blank=imread(strcat(blank_str, '7', '.tif')) + 0.000001;
+            PB_blank=imread(strcat(blank_str, '8', '.tif')) + 0.000001;
+            PP_blank=imread(strcat(blank_str, '6', '.tif'))+ 0.000001;
+            PV_blank=imread(strcat(blank_str, '5', '.tif'))+ 0.000001;
+            PR_blank=imread(strcat(blank_str, '20', '.tif'))+ 0.000001;
+            PL_blank=imread(strcat(blank_str, '23', '.tif'))+ 0.000001;
+
+            VH_blank=imread(strcat(blank_str, '10', '.tif'))+ 0.000001;
+            VB_blank=imread(strcat(blank_str, '9', '.tif'))+ 0.000001;
+            VP_blank=imread(strcat(blank_str, '11', '.tif'))+ 0.000001;
+            VV_blank=imread(strcat(blank_str, '12', '.tif'))+ 0.000001;
+            VR_blank=imread(strcat(blank_str, '21', '.tif'))+ 0.000001;
+            VL_blank=imread(strcat(blank_str, '22', '.tif'))+ 0.000001;
+
+            RH_blank=imread(strcat(blank_str, '15', '.tif'))+ 0.000001;
+            RB_blank=imread(strcat(blank_str, '16', '.tif'))+ 0.000001;
+            RP_blank=imread(strcat(blank_str, '14', '.tif'))+ 0.000001;
+            RV_blank=imread(strcat(blank_str, '13', '.tif'))+ 0.000001;
+            RR_blank=imread(strcat(blank_str, '18', '.tif'))+ 0.000001;
+            RL_blank=imread(strcat(blank_str, '17', '.tif'))+ 0.000001;
+
+%         HH_blank=single(datain{1, 1}{1, 1});
+%         HB_blank=single(datain{1, 1}{2, 1});
+%         HP_blank=single(datain{1, 1}{3, 1});
+%         HV_blank=single(datain{1, 1}{4, 1});
+%         HR_blank=single(datain{1, 1}{19, 1});
+%         HL_blank=single(datain{1, 1}{24, 1});
+%         PH_blank=single(datain{1, 1}{7, 1});
+%         PB_blank=single(datain{1, 1}{8, 1});
+%         PP_blank=single(datain{1, 1}{6, 1});
+%         PV_blank=single(datain{1, 1}{5, 1});
+%         PR_blank=single(datain{1, 1}{20, 1});
+%         PL_blank=single(datain{1, 1}{23, 1});
+%         VH_blank=single(datain{1, 1}{10, 1});
+%         VB_blank=single(datain{1, 1}{9, 1});
+%         VP_blank=single(datain{1, 1}{11, 1});
+%         VV_blank=single(datain{1, 1}{12, 1});
+%         VR_blank=single(datain{1, 1}{21, 1});
+%         VL_blank=single(datain{1, 1}{22, 1});
+%         RH_blank=single(datain{1, 1}{15, 1});
+%         RB_blank=single(datain{1, 1}{16, 1});
+%         RP_blank=single(datain{1, 1}{14, 1});
+%         RV_blank=single(datain{1, 1}{13, 1});
+%         RR_blank=single(datain{1, 1}{18, 1});
+%         RL_blank=single(datain{1, 1}{17, 1});
+        
         tic
 
         size_yblank=size(HHout,1);
@@ -184,106 +214,134 @@ for i = 1:size(list_image_dirs, 2)
 
         HH_in=zeros(num_tile_y*1844+2048-1844, num_tile_x*1844+2048-1844);
 
-    for j=1:num_tile_y
-        for i = 1:num_tile_x   
+        for j=1:num_tile_y
+            for i = 1:num_tile_x   
 
-            row=rem(j,2);
+                row=rem(j,2);
 
-            if row>0 
-                HHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=HH_blank;
-                HBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=HB_blank;
-                HPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=HP_blank;
-                HVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=HV_blank;
-                HRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=HR_blank;
-                HLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=HL_blank;  
-                PHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=PH_blank;
-                PBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=PB_blank;
-                PPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=PP_blank;
-                PVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=PV_blank;
-                PRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=PR_blank;
-                PLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=PL_blank;
+                if row>0 
+                    HHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=HH_blank;
+                    HBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=HB_blank;
+                    HPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=HP_blank;
+                    HVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=HV_blank;
+                    HRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=HR_blank;
+                    HLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=HL_blank;  
+                    PHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=PH_blank;
+                    PBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=PB_blank;
+                    PPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=PP_blank;
+                    PVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=PV_blank;
+                    PRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=PR_blank;
+                    PLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=PL_blank;
 
-                VHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=VH_blank;
-                VBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=VB_blank;
-                VPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=VP_blank;
-                VVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=VV_blank;
-                VRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=VR_blank;
-                VLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=VL_blank;
+                    VHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=VH_blank;
+                    VBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=VB_blank;
+                    VPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=VP_blank;
+                    VVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=VV_blank;
+                    VRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=VR_blank;
+                    VLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=VL_blank;
 
-                RHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=RH_blank;
-                RBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=RB_blank;
-                RPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=RP_blank;
-                RVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=RV_blank;
-                RRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=RR_blank;
-                RLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=RL_blank;
-            end
-
-            if row==0     
-                if i == 1
-                    HHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=HH_blank; 
-                    HBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=HB_blank; 
-                    HPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=HP_blank; 
-                    HVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=HV_blank; 
-                    HRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=HR_blank; 
-                    HLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=HL_blank; 
-
-                    PHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=PH_blank; 
-                    PBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=PB_blank; 
-                    PPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=PP_blank; 
-                    PVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=PV_blank; 
-                    PRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=PR_blank; 
-                    PLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=PL_blank; 
-
-                    VHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=VH_blank; 
-                    VBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=VB_blank; 
-                    VPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=VP_blank; 
-                    VVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=VV_blank; 
-                    VRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=VR_blank; 
-                    VLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=VL_blank; 
-
-                    RHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=RH_blank; 
-                    RBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=RB_blank; 
-                    RPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=RP_blank; 
-                    RVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=RV_blank; 
-                    RRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=RR_blank; 
-                    RLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=RL_blank; 
-
-                else        
-                    HHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = HH_blank(:,2048-1844+1:2048);
-                    HBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = HB_blank(:,2048-1844+1:2048);           
-                    HPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = HP_blank(:,2048-1844+1:2048);       
-                    HVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = HV_blank(:,2048-1844+1:2048);           
-                    HRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = HR_blank(:,2048-1844+1:2048);           
-                    HLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = HL_blank(:,2048-1844+1:2048);           
-
-                    PHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = PH_blank(:,2048-1844+1:2048);
-                    PBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = PB_blank(:,2048-1844+1:2048);           
-                    PPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = PP_blank(:,2048-1844+1:2048);       
-                    PVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = PV_blank(:,2048-1844+1:2048);           
-                    PRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = PR_blank(:,2048-1844+1:2048);           
-                    PLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = PL_blank(:,2048-1844+1:2048);           
-
-                    VHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = VH_blank(:,2048-1844+1:2048);
-                    VBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = VB_blank(:,2048-1844+1:2048);           
-                    VPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = VP_blank(:,2048-1844+1:2048);       
-                    VVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = VV_blank(:,2048-1844+1:2048);           
-                    VRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = VR_blank(:,2048-1844+1:2048);           
-                    VLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = VL_blank(:,2048-1844+1:2048);           
-
-                    RHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = RH_blank(:,2048-1844+1:2048);
-                    RBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = RB_blank(:,2048-1844+1:2048);           
-                    RPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = RP_blank(:,2048-1844+1:2048);       
-                    RVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = RV_blank(:,2048-1844+1:2048);           
-                    RRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = RR_blank(:,2048-1844+1:2048);           
-                    RLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = RL_blank(:,2048-1844+1:2048);           
+                    RHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=RH_blank;
+                    RBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=RB_blank;
+                    RPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=RP_blank;
+                    RVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=RV_blank;
+                    RRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=RR_blank;
+                    RLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*1844+(2048-1844))=RL_blank;
                 end
-            end
 
+                if row==0     
+                    if i == 1
+                        HHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=HH_blank; 
+                        HBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=HB_blank; 
+                        HPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=HP_blank; 
+                        HVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=HV_blank; 
+                        HRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=HR_blank; 
+                        HLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=HL_blank; 
+
+                        PHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=PH_blank; 
+                        PBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=PB_blank; 
+                        PPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=PP_blank; 
+                        PVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=PV_blank; 
+                        PRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=PR_blank; 
+                        PLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=PL_blank; 
+
+                        VHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=VH_blank; 
+                        VBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=VB_blank; 
+                        VPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=VP_blank; 
+                        VVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=VV_blank; 
+                        VRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=VR_blank; 
+                        VLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=VL_blank; 
+
+                        RHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=RH_blank; 
+                        RBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=RB_blank; 
+                        RPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=RP_blank; 
+                        RVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=RV_blank; 
+                        RRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=RR_blank; 
+                        RLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+1:i*2048)=RL_blank; 
+
+                    else        
+                        HHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = HH_blank(:,2048-1844+1:2048);
+                        HBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = HB_blank(:,2048-1844+1:2048);           
+                        HPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = HP_blank(:,2048-1844+1:2048);       
+                        HVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = HV_blank(:,2048-1844+1:2048);           
+                        HRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = HR_blank(:,2048-1844+1:2048);           
+                        HLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = HL_blank(:,2048-1844+1:2048);           
+
+                        PHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = PH_blank(:,2048-1844+1:2048);
+                        PBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = PB_blank(:,2048-1844+1:2048);           
+                        PPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = PP_blank(:,2048-1844+1:2048);       
+                        PVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = PV_blank(:,2048-1844+1:2048);           
+                        PRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = PR_blank(:,2048-1844+1:2048);           
+                        PLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = PL_blank(:,2048-1844+1:2048);           
+
+                        VHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = VH_blank(:,2048-1844+1:2048);
+                        VBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = VB_blank(:,2048-1844+1:2048);           
+                        VPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = VP_blank(:,2048-1844+1:2048);       
+                        VVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = VV_blank(:,2048-1844+1:2048);           
+                        VRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = VR_blank(:,2048-1844+1:2048);           
+                        VLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = VL_blank(:,2048-1844+1:2048);           
+
+                        RHin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = RH_blank(:,2048-1844+1:2048);
+                        RBin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = RB_blank(:,2048-1844+1:2048);           
+                        RPin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = RP_blank(:,2048-1844+1:2048);       
+                        RVin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = RV_blank(:,2048-1844+1:2048);           
+                        RRin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = RR_blank(:,2048-1844+1:2048);           
+                        RLin((j-1)*1844+1:j*1844+(2048-1844), (i-1)*1844+(2048-1844)+1:i*1844+(2048-1844)) = RL_blank(:,2048-1844+1:2048);           
+                    end
+                end
+
+            end    
         end
+    else
+        HHin=single(datain{1, 1}{1, 1});
+        HBin=single(datain{1, 1}{2, 1});
+        HPin=single(datain{1, 1}{3, 1});
+        HVin=single(datain{1, 1}{4, 1});
+        HRin=single(datain{1, 1}{19, 1});
+        HLin=single(datain{1, 1}{24, 1});
+        PHin=single(datain{1, 1}{7, 1});
+        PBin=single(datain{1, 1}{8, 1});
+        PPin=single(datain{1, 1}{6, 1});
+        PVin=single(datain{1, 1}{5, 1});
+        PRin=single(datain{1, 1}{20, 1});
+        PLin=single(datain{1, 1}{23, 1});
+        VHin=single(datain{1, 1}{10, 1});
+        VBin=single(datain{1, 1}{9, 1});
+        VPin=single(datain{1, 1}{11, 1});
+        VVin=single(datain{1, 1}{12, 1});
+        VRin=single(datain{1, 1}{21, 1});
+        VLin=single(datain{1, 1}{22, 1});
+        RHin=single(datain{1, 1}{15, 1});
+        RBin=single(datain{1, 1}{16, 1});
+        RPin=single(datain{1, 1}{14, 1});
+        RVin=single(datain{1, 1}{13, 1});
+        RRin=single(datain{1, 1}{18, 1});
+        RLin=single(datain{1, 1}{17, 1});
     end
-
+        
+        
+        
     time_assemble_blank=toc
-    end
+
     % Resize images
     if resize == 1   %Resize_dim
         tic
@@ -317,6 +375,8 @@ for i = 1:size(list_image_dirs, 2)
 
         toc;
         time_resize=toc
+    else
+        time_resize = 0;
     end
     %% Calculate Input Stokes Vectors
 
@@ -535,7 +595,8 @@ for i = 1:size(list_image_dirs, 2)
         save(sprintf('%s%s',results_dir,sample,'_Diatten.mat'), 'Diatten_final');
         save(sprintf('%s%s',results_dir,sample,'_Orient.mat'), 'Orient_final');
         csvwrite(sprintf('%s%s', results_dir, sample,'_LR.csv'), LR_final)
-
+        csvwrite(sprintf('%s%s', results_dir, sample,'_Orient.csv'), Orient_final)
+        
         time_save_final=toc
     end
 
