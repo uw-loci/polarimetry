@@ -7,7 +7,9 @@ convert_images(file_list, file_dir);
 
 function convert_images(file_list, file_dir){
 	for (i = 0; i < file_list.length; i++){
-		open(file_list[i]);
+		image_path = file_dir + file_list[i];
+		
+		open(image_path);
 		run("8-bit");
 		run("Save");
 		close();
