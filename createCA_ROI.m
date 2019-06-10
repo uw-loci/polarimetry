@@ -1,4 +1,4 @@
-function CA_ROI = createCA_ROI(ROI, Params, tempROI)
+function CA_ROI = createCA_ROI(ROI_Image, Params, tempROI)
 
     CA_ROI = tempROI;
     CA_ROI.roi = [Params.xLow,Params.yLow,Params.roiWidth,Params.roiHeight];
@@ -13,4 +13,6 @@ function CA_ROI = createCA_ROI(ROI, Params, tempROI)
         Params.yHigh,Params.xLow;...
         Params.yLow,Params.xLow]};
 
+    %todo: implement save roi for cytospectre
+    
 end

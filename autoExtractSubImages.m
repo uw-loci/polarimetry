@@ -66,7 +66,7 @@ Param.pixelNumThresh  = floor(str2double(userInput(7)));
 for i = 1:max(size(fileList))
     %Read in the current image
     imgNum = 1;
-    img = imread(fileList(i).name);
+    img = double(imread(fileList(i).name));
     Param.baseImgInfo = imfinfo(fileList(i).name);
     [Param.path,Param.fileName_NE] = fileparts(fileList(i).name); %File name without extension
     
@@ -106,7 +106,6 @@ for i = 1:max(size(fileList))
 
     if strcmp(isCHTC,'Yes') %Separate images into delineated batches 
         
-    
         jobIdx = 0; %To name the tar file
         picIdx = 1; %To 
         
@@ -126,9 +125,7 @@ for i = 1:max(size(fileList))
 
                     imwrite(subImg,fullfile(Param.path,strcat(imgName,'.tif')));
                     generateROIs(imgName,Param);
-            
-                    
-                    
+                       
                     if picIdx == 1 %Check for a new job                 
                         jobIdx = jobIdx + 1; %
                         tarName = strcat(Param.fileName_NE,'_Job-',num2str(jobIdx),'.tar');      
