@@ -1,21 +1,31 @@
 # @File(label='Select the base directory for the SMS images', style="directory") baseDir 
 # @Float(label='Pixel size in um') pixelSize
+# @Boolean(label='Reverse the x axis?') reverse
+
+
 
 import os
 from shutil import copyfile
 import json
 
+if reverse:
+	sign = -1
+else:
+	sign = 1
+
+
 directories = [name for name in os.listdir(str(baseDir)) if os.path.isdir(os.path.join(str(baseDir), name))]
 numDirs = len(directories)
+topDir = os.path.basename(str(baseDir))
 
-retDir = os.path.join(str(baseDir), 'Retardance')
+retDir = os.path.join(str(baseDir), topDir + ' Retardance')
 if not os.path.exists(retDir):
 	os.mkdir(retDir)
 	print("Directory " + retDir + " created")
 else:    
     print("Directory " + retDir  + " already exists")
     
-orientDir = os.path.join(str(baseDir), 'Orientation')
+orientDir = os.path.join(str(baseDir), topDir + ' Orientation')
 if not os.path.exists(orientDir):
 	os.mkdir(orientDir)
 	print("Directory " + orientDir + " created")
@@ -62,8 +72,8 @@ for i in range(numDirs):
 	
 	pos = [xpos, ypos]
 	
-	retID.write(retName + '; ; (' + str(pos[0]) + ', ' + str(pos[1]) + ')\n')
-	slowID.write(slowName + '; ; (' + str(pos[0]) + ', ' + str(pos[1]) + ')\n')
+	retID.write(retName + '; ; (' + str(sign*pos[0]) + ', ' + str(pos[1]) + ')\n')
+	slowID.write(slowName + '; ; (' + str(sign*pos[0]) + ', ' + str(pos[1]) + ')\n')
 	#Convert the stage position to pixels, as the stitching algorithm
 	# position input is pixels.
 	
